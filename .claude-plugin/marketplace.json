@@ -1,0 +1,39 @@
+{
+  "name": "agent-skills",
+  "owner": {
+    "name": "bytedance"
+  },
+  "metadata": {
+    "description": "A curated collection of agent skills covering visual web design, local knowledge-base retrieval, and GPT Image 2 image generation.",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "web-design-skills",
+      "description": "Skills for high-quality visual / front-end design work.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/web-design-engineer"
+      ]
+    },
+    {
+      "name": "knowledge-base-skills",
+      "description": "Skills for local knowledge-base retrieval and document QA.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/rag-skill"
+      ]
+    },
+    {
+      "name": "image-generation-skills",
+      "description": "Skills for image generation and editing with GPT Image 2 (and OpenAI-compatible image endpoints), with three runtime modes and 70+ structured prompt templates.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/gpt-image-2"
+      ]
+    }
+  ]
+}

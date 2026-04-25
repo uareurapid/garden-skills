@@ -1,172 +1,285 @@
-# Web Design Engineer Skill
+<div align="center">
 
-**An AI agent skill that transforms AI-generated web pages from "functional" to "stunning."**
+# Agent Skills
 
-[中文文档](./README.zh-CN.md)
+**A curated collection of production-ready [Agent Skills](https://support.claude.com/en/articles/12512176-what-are-skills) for Claude Code, Cursor, Codex, and other AI coding agents.**
 
----
+[![License: MIT](https://img.shields.io/github/license/ConardLi/web-design-skill?style=flat-square&color=blue)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ConardLi/web-design-skill?style=flat-square)](https://github.com/ConardLi/web-design-skill/stargazers)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#contributing)
+[![Skills count](https://img.shields.io/badge/skills-3-orange?style=flat-square)](#whats-inside)
+[![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
-## What Is This?
+[English](./README.md) · [中文文档](./README.zh-CN.md)
 
-This is a reusable **Skill** (structured system prompt) for AI coding agents — such as [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Cursor](https://cursor.com), and other tools that support the `SKILL.md` format — that dramatically improves the design quality of AI-generated HTML/CSS/JavaScript artifacts.
-
-It distills the core design philosophy from [Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs)'s system prompt into an open, portable, and customizable skill file that you can drop into any project.
-
-### The Problem
-
-Modern LLMs can already produce functional web pages from simple prompts. But their output tends to converge on the same aesthetic: Inter font, blue primary buttons, purple-pink gradients, large-radius cards, emoji as icons, fabricated testimonials. Technically correct, visually generic.
-
-### The Solution
-
-This skill injects **design taste** into the AI's decision-making process through:
-
-- **Anti-cliché rules** — an explicit blocklist of overused AI design patterns
-- **Design system declaration** — forces the AI to articulate color, typography, spacing, and motion choices *before writing code*
-- **oklch color theory** — perceptually uniform color derivation instead of random hex guessing
-- **Curated font & color pairings** — high-quality starting points that replace the default Inter + #3b82f6
-- **Placeholder philosophy** — honest `[icon]` markers instead of poorly drawn SVG fakes
-- **Structured workflow** — six-step process from requirements → context → design system → v0 draft → full build → verification
+</div>
 
 ---
 
-## Quick Start
+## Table of contents
 
-### For Claude Code / Cursor / AI Agents
+- [Why this exists](#why-this-exists)
+- [What's inside](#whats-inside)
+- [Install](#install)
+  - [Option A · Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)
+  - [Option B · Manual copy into your project](#option-b--manual-copy-into-your-project)
+  - [Option C · Git submodule](#option-c--git-submodule)
+- [Compatibility](#compatibility)
+- [Anatomy of a Skill](#anatomy-of-a-skill)
+- [Repository layout](#repository-layout)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
-Copy the skill directory into your project:
+---
 
+## What's inside
+
+<table>
+<tr>
+<th width="22%">Skill</th>
+<th width="14%">Category</th>
+<th>Highlights</th>
+<th width="14%">Docs</th>
+</tr>
+
+<tr>
+<td>
+
+**[`web-design-engineer`](./skills/web-design-engineer)**
+
+</td>
+<td>
+
+Design&nbsp;/&nbsp;Frontend
+
+</td>
+<td>
+
+Turns AI-generated web pages from "functional" into "stunning."
+
+- Anti-cliché blocklist (no purple-pink gradients, no Inter, no emoji icons)
+- `oklch` color theory + 6 curated color × font pairings
+- Six-step workflow: requirements → context → design system → v0 → build → verify
+- ~520-line advanced patterns library
+
+</td>
+<td>
+
+[README](./skills/web-design-engineer/README.md) · [SKILL](./skills/web-design-engineer/SKILL.md) · [Demo](./demo/web-design-demo)
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+**[`rag-skill`](./skills/rag-skill)**
+<br/><sub>frontmatter `name: kb-retriever`</sub>
+
+</td>
+<td>
+
+Retrieval&nbsp;/&nbsp;Docs
+
+</td>
+<td>
+
+A local knowledge-base retriever that never loads whole files into context.
+
+- Hierarchical `data_structure.md` index navigation
+- Mandatory **learn-before-process** for PDF / Excel
+- Progressive `grep` + windowed reads, bounded to 5 rounds
+- Reference docs for `pdftotext` / `pdfplumber` / `pandas` workflows
+
+</td>
+<td>
+
+[README](./skills/rag-skill/README.md) · [SKILL](./skills/rag-skill/SKILL.md)
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+**[`gpt-image-2`](./skills/gpt-image-2)**
+
+</td>
+<td>
+
+Image&nbsp;Gen&nbsp;/&nbsp;Prompting
+
+</td>
+<td>
+
+A focused image-gen skill for GPT Image 2 (and OpenAI-compatible image APIs).
+
+- **Three runtime modes**: A&nbsp;Garden local · B&nbsp;Host-native delegate · C&nbsp;Advisor-only
+- 18 categories, 70+ structured prompt templates
+- Auto prompt + image archival under `garden-gpt-image-2/`
+- Mode-detection script so the skill never silently fails
+
+</td>
+<td>
+
+[README](./skills/gpt-image-2/README.md) · [SKILL](./skills/gpt-image-2/SKILL.md)
+
+</td>
+</tr>
+</table>
+
+---
+
+## Install
+
+### Option A · Claude Code plugin marketplace
+
+The fastest path if you use [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
+
+```bash
+/plugin marketplace add ConardLi/web-design-skill
+/plugin install web-design-skills@agent-skills
+/plugin install knowledge-base-skills@agent-skills
+/plugin install image-generation-skills@agent-skills
 ```
-your-project/
-├── .agents/skills/web-design-engineer/
-│   ├── SKILL.md                          # Main skill file (~400 lines)
-│   └── references/
-│       └── advanced-patterns.md          # Code template library (~520 lines)
-└── ...
-```
 
-The agent will automatically pick up the skill when your request involves visual/interactive front-end work.
+Plugin packs are declared in [`.claude-plugin/marketplace.json`](./.claude-plugin/marketplace.json):
 
-> **Note**: Some tools use `.claude/skills/` instead of `.agents/skills/`. Place the files in whichever directory your tool expects. The content is identical.
-
-### What It Covers
-
-| Output Type | Examples |
+| Plugin pack | Skills included |
 |---|---|
-| Web pages & landing pages | Marketing sites, product pages, portfolios |
-| Interactive prototypes | Clickable app mockups with device frames |
-| Slide decks | HTML presentations (1920×1080, keyboard nav) |
-| Data visualizations | Dashboards with Chart.js or D3.js |
-| Animations | CSS/JS motion design, timeline-driven demos |
-| Design systems | Token exploration, component variants |
+| `web-design-skills` | `web-design-engineer` |
+| `knowledge-base-skills` | `rag-skill` |
+| `image-generation-skills` | `gpt-image-2` |
+
+### Option B · Manual copy into your project
+
+Each skill folder is self-contained — copy the one(s) you want into your project's skills directory:
+
+```bash
+# Claude Code / Claude.ai
+cp -r skills/web-design-engineer  your-project/.claude/skills/
+
+# Cursor / generic agent
+cp -r skills/web-design-engineer  your-project/.agents/skills/
+```
+
+The agent will discover the skill the next time it scans the workspace.
+
+### Option C · Git submodule
+
+If you want to track upstream updates inside a larger project:
+
+```bash
+git submodule add https://github.com/ConardLi/web-design-skill.git vendor/agent-skills
+ln -s ../../vendor/agent-skills/skills/web-design-engineer .claude/skills/web-design-engineer
+```
 
 ---
 
-## How It Works
+## Compatibility
 
-### The Six-Step Workflow
-
-```
-1. Understand requirements  →  Ask only when information is insufficient
-2. Gather design context    →  Code > screenshots; never start from nothing
-3. Declare design system    →  Colors, fonts, spacing, motion — in Markdown, before code
-4. Show v0 draft early      →  Placeholders + layout + tokens; let the user course-correct
-5. Full build               →  Components, states, motion; pause at key decision points
-6. Verify                   →  Pre-delivery checklist; no console errors, no rogue hues
-```
-
-### Key Design Principles
-
-**Anti-AI-cliché checklist.** The skill explicitly bans:
-- Purple-pink-blue gradient backgrounds
-- Left-border accent cards
-- Inter / Roboto / Arial / Fraunces / system-ui fonts
-- Emoji as icon substitutes
-- Fabricated stats, fake logo walls, dummy testimonials
-
-**oklch color system.** Colors are derived in the perceptually uniform oklch space. Same lightness values actually *look* the same brightness to the human eye — unlike HSL, where yellow-at-50% looks much brighter than blue-at-50%.
-
-**Curated starting points.** Six pre-validated color × font pairings for common use cases:
-
-| Style | Color | Fonts | Use Case |
-|---|---|---|---|
-| Modern tech | Blue-violet | Space Grotesk + Inter | SaaS, dev tools |
-| Elegant editorial | Warm brown | Newsreader + Outfit | Content, blogs |
-| Premium brand | Near-black | Sora + Plus Jakarta Sans | Luxury, finance |
-| Lively consumer | Coral | Plus Jakarta Sans + Outfit | E-commerce, social |
-| Minimal professional | Teal-blue | Outfit + Space Grotesk | Dashboards, B2B |
-| Artisan warmth | Caramel | Caveat + Newsreader | Food, education |
-
----
-
-## Demos
-
-The `demo/` directory contains side-by-side comparisons of pages generated with and without the skill, using identical prompts.
-
-### Demo 1: Space Exploration Museum
-
-**Prompt:** *"Build a homepage for a fictional 'Space Exploration Museum' — full-screen hero, 4 exhibition sections, a timeline with 6+ milestones, a booking CTA, and a footer. Deep, immersive, cosmic feel."*
-
-| | Without Skill | With Skill |
+| Agent / Runtime | Skill location | Status |
 |---|---|---|
-| **File** | `demo/demo1.html` | `demo/demo1-with-skill.html` |
-| **Color system** | Hardcoded hex values (#7cf0ff, #b388ff) | oklch-based token system with CSS custom properties |
-| **Typography** | Orbitron + Noto Serif SC | Instrument Serif + Space Grotesk + JetBrains Mono |
-| **Layout** | Standard landing-page structure | Editorial magazine-style layout with grid compositions |
-| **Details** | Heavy glow effects, neon gradients | Restrained palette, typographic hierarchy, decorative data elements |
-| **Overall feel** | Enthusiastic junior designer | Experienced design director |
+| **Claude Code** | `.claude/skills/<name>/` or via plugin marketplace | ✅ Tested |
+| **Claude.ai** (web) | Settings → Capabilities → Skills | ✅ Tested |
+| **Cursor** | `.agents/skills/<name>/` | ✅ Tested |
+| **Codex CLI** | `.codex/skills/<name>/` | ✅ Should work (manual copy) |
+| **Gemini CLI** | extension manifest | 🟡 Untested |
+| **OpenCode** | `.opencode/skills/<name>/` | 🟡 Untested |
 
-### Demo 2: Photographer Portfolio
-
-**Prompt:** *"Build a homepage for an independent photographer's portfolio."*
-
-| | With Skill |
-|---|---|
-| **File** | `demo/demo2-with-skill.html` |
-| **Character** | Creates a fictional Nordic photographer "Mira Høst" with a complete visual identity |
-| **Color** | Paper-warm light (#f2efe8) + ink-dark (#161513) — extremely restrained two-tone palette |
-| **Typography** | Instrument Serif (display) + Space Grotesk (UI) with extensive italic usage |
-| **Layout** | Magazine-editorial structure with numbered sections, asymmetric grids, side rails |
-| **Motion** | Slow Ken Burns on hero image (24s cycle), film-grain texture overlay |
-| **Navigation** | `mix-blend-mode: difference` masthead — seamless across light/dark sections |
+> The `SKILL.md` format is portable by design — if your agent supports skills, copy the folder into the directory it scans, and it should work. PRs welcome to extend this matrix.
 
 ---
 
-## File Structure
+## Anatomy of a Skill
 
+Every skill in this repo follows the same minimal shape:
+
+```text
+<skill-name>/
+├── SKILL.md            ← required: YAML frontmatter + instructions for the agent
+├── README.md           ← English docs for humans (this is what GitHub renders)
+├── README.zh-CN.md     ← Chinese docs for humans
+├── references/         ← optional: docs the agent loads on-demand
+├── scripts/            ← optional: deterministic executable code
+└── assets/             ← optional: templates, fonts, icons used in outputs
 ```
+
+Frontmatter is the contract that tells the agent *when* to use the skill:
+
+```markdown
+---
+name: my-skill
+description: A clear sentence about what this skill does and when to use it.
+              The agent uses this to decide whether to load the skill.
+---
+
+# My Skill
+
+Detailed instructions, examples, and constraints go here.
+```
+
+For the full spec, see [agentskills.io](https://agentskills.io) and the [official examples from Anthropic](https://github.com/anthropics/skills).
+
+---
+
+## Repository layout
+
+```text
 .
-├── README.md                                    # This file (English)
-├── README.zh-CN.md                              # Chinese documentation
-├── .agents/skills/web-design-engineer/
-│   ├── SKILL.md                                 # Main skill definition
-│   └── references/
-│       └── advanced-patterns.md                 # Code templates & patterns
-├── demo/
-│   ├── demo1.html                               # Space museum — without skill
-│   ├── demo1-with-skill.html                    # Space museum — with skill
-│   └── demo2-with-skill.html                    # Photographer portfolio — with skill
-└── prompt/
-    └── system.md                                # Claude Design system prompt (reference)
+├── skills/                              ← all skills live here, one folder each
+│   ├── web-design-engineer/
+│   │   ├── SKILL.md
+│   │   ├── README.md  /  README.zh-CN.md
+│   │   └── references/advanced-patterns.md
+│   │
+│   ├── rag-skill/                       ← frontmatter name: kb-retriever
+│   │   ├── SKILL.md
+│   │   ├── README.md  /  README.zh-CN.md
+│   │   ├── references/  (pdf_reading.md, excel_reading.md, excel_analysis.md)
+│   │   └── scripts/convert_pdf_to_images.py
+│   │
+│   └── gpt-image-2/
+│       ├── SKILL.md
+│       ├── README.md  /  README.zh-CN.md
+│       ├── references/  (18 categories, 70+ prompt templates)
+│       └── scripts/     (check-mode.js, generate.js, edit.js, shared.js)
+│
+├── .claude-plugin/
+│   └── marketplace.json                 ← Claude Code plugin marketplace manifest
+│
+├── demo/                                ← live, openable demos
+│   └── web-design-demo/
+│       └── demo2/                       ← side-by-side viewer for web-design-engineer
+│           ├── index.html
+│           ├── demo1.html  /  demo1-with-skill.html
+│           └── demo2-with-skill.html
+│
+├── dist/                                ← reference assets and showcase site
+│   ├── prompt/
+│   │   └── claude-design-system-prompt.md   (original Claude Design system prompt)
+│   └── web/                             (Vite + React showcase site, optional)
+│
+├── README.md  /  README.zh-CN.md        ← collection index (this file)
+├── LICENSE
+└── .gitignore
 ```
 
 ---
 
-## Background
 
-This skill is inspired by the system prompt of [Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs), Anthropic's visual design product launched in April 2026. Claude Design's system prompt (~420 lines) encodes a sophisticated set of design principles, anti-patterns, and workflow constraints that make its output consistently high-quality.
+## Acknowledgments
 
-This project extracts and refines those core ideas into a portable skill that works with any AI coding agent — giving you Claude-Design-level design taste without the product lock-in or usage limits.
+This collection stands on the shoulders of:
 
-Key additions beyond the original Claude Design prompt:
-- **Design system declaration step** — forces the AI to articulate design tokens in natural language before coding
-- **v0 draft strategy** — a concrete methodology for showing work-in-progress early
-- **Extended anti-cliché list** — additional patterns identified from real-world AI output
-- **Placeholder philosophy** — a complete framework for handling missing assets professionally
-- **Color × font pairing table** — six validated visual system starting points
-- **Advanced pattern library** — ready-to-use code templates for common UI patterns
+- **[Anthropic](https://www.anthropic.com)** for the [Agent Skills spec](https://agentskills.io) and the [`anthropics/skills`](https://github.com/anthropics/skills) reference repository.
+- **[Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs)** — the system prompt that inspired `web-design-engineer`. The original is preserved in [`dist/prompt/claude-design-system-prompt.md`](./dist/prompt/claude-design-system-prompt.md) for reference.
+- The broader OSS skill community — see [`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) and [`obra/superpowers`](https://github.com/obra/superpowers) for further discovery.
 
 ---
 
 ## License
 
-MIT
+[MIT](./LICENSE) © [ConardLi](https://github.com/ConardLi)

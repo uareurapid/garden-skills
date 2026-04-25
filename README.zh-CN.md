@@ -1,172 +1,284 @@
-# Web Design Engineer Skill
+<div align="center">
 
-**一个让 AI 生成网页从"能用"进阶到"惊艳"的 Agent 技能。**
+# Agent Skills
 
-[English](./README.md)
+**花园老师的开源 [Agent Skills](https://support.claude.com/en/articles/12512176-what-are-skills) 集合，面向 Claude Code、Cursor、Codex 等所有支持 `SKILL.md` 格式的 AI 编程代理。**
 
----
+[![License: MIT](https://img.shields.io/github/license/ConardLi/web-design-skill?style=flat-square&color=blue)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ConardLi/web-design-skill?style=flat-square)](https://github.com/ConardLi/web-design-skill/stargazers)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#贡献)
+[![Skills count](https://img.shields.io/badge/skills-3-orange?style=flat-square)](#集合内的-skills)
+[![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
-## 这是什么？
+[English](./README.md) · [中文文档](./README.zh-CN.md)
 
-这是一个面向 AI 编程代理（如 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)、[Cursor](https://cursor.com) 以及其他支持 `SKILL.md` 格式的工具）的可复用 **Skill**（结构化系统提示词），能显著提升 AI 生成的 HTML/CSS/JavaScript 产物的设计品质。
-
-它将 [Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs) 系统提示词中的核心设计理念提炼为一个开放、可移植、可自定义的技能文件，可以直接放进任何项目中使用。
-
-### 问题
-
-现代大语言模型已经能根据简单的提示词生成功能完整的网页。但它们的输出总是趋向同一种审美：Inter 字体、蓝色主按钮、紫粉渐变、大圆角卡片、emoji 充当图标、编造的好评数据。技术上没问题，视觉上千篇一律。
-
-### 解决方案
-
-这个 Skill 通过以下方式将**设计品位**注入 AI 的决策过程：
-
-- **反俗套规则** —— 一份明确的 AI 设计雷区清单
-- **设计系统宣告** —— 强制 AI 在写代码之前，先用自然语言说清配色、字体、间距和动效选择
-- **oklch 色彩理论** —— 基于感知均匀色彩空间的配色派生，取代随机 hex 值
-- **精选字体 × 配色组合** —— 高品质起点，替代默认的 Inter + #3b82f6
-- **占位符哲学** —— 用诚实的 `[icon]` 标记代替拙劣的 SVG 假图
-- **结构化工作流** —— 从需求理解 → 上下文获取 → 设计系统宣告 → v0 草稿 → 完整构建 → 验证的六步流程
+</div>
 
 ---
 
-## 快速上手
+## 目录
 
-### 用于 Claude Code / Cursor / AI Agent
+- [为什么有这个仓库](#为什么有这个仓库)
+- [集合内的 Skills](#集合内的-skills)
+- [安装](#安装)
+  - [方式 A · Claude Code 插件市场](#方式-a--claude-code-插件市场)
+  - [方式 B · 手动拷贝到项目](#方式-b--手动拷贝到项目)
+  - [方式 C · Git Submodule](#方式-c--git-submodule)
+- [兼容性](#兼容性)
+- [Skill 的标准结构](#skill-的标准结构)
+- [仓库结构](#仓库结构)
+- [Roadmap](#roadmap)
+- [贡献](#贡献)
+- [致谢](#致谢)
+- [许可证](#许可证)
 
-将技能目录复制到你的项目中：
+---
 
+## 集合内的 Skills
+
+<table>
+<tr>
+<th width="22%">Skill</th>
+<th width="14%">类别</th>
+<th>亮点</th>
+<th width="14%">文档</th>
+</tr>
+
+<tr>
+<td>
+
+**[`web-design-engineer`](./skills/web-design-engineer)**
+
+</td>
+<td>
+
+设计&nbsp;/&nbsp;前端
+
+</td>
+<td>
+
+把 AI 生成的网页从"能用"升级到"惊艳"。
+
+- 反 AI 俗套清单（紫粉渐变、Inter、emoji 当图标都禁用）
+- `oklch` 色彩理论 + 6 套精选配色 × 字体组合
+- 六步工作流：需求 → 上下文 → 设计系统 → v0 → 完整构建 → 验证
+- ~520 行的高级模式库
+
+</td>
+<td>
+
+[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL](./skills/web-design-engineer/SKILL.md) · [Demo](./demo/web-design-demo)
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+**[`rag-skill`](./skills/rag-skill)**
+<br/><sub>frontmatter `name: kb-retriever`</sub>
+
+</td>
+<td>
+
+检索&nbsp;/&nbsp;文档
+
+</td>
+<td>
+
+本地知识库检索 Skill，永远不会把整文件塞进 context。
+
+- 分层 `data_structure.md` 索引导航
+- PDF / Excel **强制先学习再处理**
+- 渐进式 `grep` + 窗口读取，最多 5 轮迭代
+- 自带 `pdftotext` / `pdfplumber` / `pandas` 工作流的参考文档
+
+</td>
+<td>
+
+[README](./skills/rag-skill/README.zh-CN.md) · [SKILL](./skills/rag-skill/SKILL.md)
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+**[`gpt-image-2`](./skills/gpt-image-2)**
+
+</td>
+<td>
+
+图像生成&nbsp;/&nbsp;Prompt
+
+</td>
+<td>
+
+聚焦的 GPT Image 2 图像生成 / 编辑 Skill，兼容 OpenAI 兼容图像 API。
+
+- **三种运行模式**：A&nbsp;Garden 本地直出 · B&nbsp;委托宿主出图 · C&nbsp;纯提示词顾问
+- 18 大类、70+ 个结构化提示词模板
+- 自动归档 prompt + image 到 `garden-gpt-image-2/`
+- 自带模式探测脚本，永不静默失败
+
+</td>
+<td>
+
+[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL](./skills/gpt-image-2/SKILL.md)
+
+</td>
+</tr>
+</table>
+
+---
+
+## 安装
+
+### 方式 A · Claude Code 插件市场
+
+如果你用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)，这是最快的路径：
+
+```bash
+/plugin marketplace add ConardLi/web-design-skill
+/plugin install web-design-skills@agent-skills
+/plugin install knowledge-base-skills@agent-skills
+/plugin install image-generation-skills@agent-skills
 ```
-your-project/
-├── .agents/skills/web-design-engineer/
-│   ├── SKILL.md                          # 主技能文件（约 400 行）
-│   └── references/
-│       └── advanced-patterns.md          # 代码模板库（约 520 行）
-└── ...
-```
 
-当你的请求涉及可视化/交互式前端工作时，Agent 会自动启用此技能。
+插件包定义在 [`.claude-plugin/marketplace.json`](./.claude-plugin/marketplace.json)：
 
-> **注意**：部分工具使用 `.claude/skills/` 目录。将文件放在你的工具所需的目录中即可，内容完全相同。
-
-### 覆盖范围
-
-| 输出类型 | 示例 |
+| 插件包 | 包含的 Skills |
 |---|---|
-| 网页 & 落地页 | 营销页面、产品页、作品集 |
-| 交互式原型 | 带设备框架的可点击 App 模型 |
-| 幻灯片 | HTML 演示文稿（1920×1080，键盘导航） |
-| 数据可视化 | 基于 Chart.js 或 D3.js 的仪表盘 |
-| 动画 | CSS/JS 动效设计，时间线驱动的演示 |
-| 设计系统 | Token 探索、组件变体 |
+| `web-design-skills` | `web-design-engineer` |
+| `knowledge-base-skills` | `rag-skill` |
+| `image-generation-skills` | `gpt-image-2` |
+
+### 方式 B · 手动拷贝到项目
+
+每个 Skill 文件夹都是自包含的，挑你要的拷过去即可：
+
+```bash
+# Claude Code / Claude.ai
+cp -r skills/web-design-engineer  your-project/.claude/skills/
+
+# Cursor / 通用 Agent
+cp -r skills/web-design-engineer  your-project/.agents/skills/
+```
+
+Agent 在下次扫描工作区时会自动发现。
+
+### 方式 C · Git Submodule
+
+如果你想在更大的项目里跟踪上游更新：
+
+```bash
+git submodule add https://github.com/ConardLi/web-design-skill.git vendor/agent-skills
+ln -s ../../vendor/agent-skills/skills/web-design-engineer .claude/skills/web-design-engineer
+```
 
 ---
 
-## 工作原理
+## 兼容性
 
-### 六步工作流
-
-```
-1. 理解需求          →  信息充足就干活，信息不足才提问
-2. 获取设计上下文    →  代码 > 截图；不要从空气中开始
-3. 宣告设计系统      →  配色、字体、间距、动效 —— 用 Markdown 说明，写代码之前
-4. 尽早展示 v0       →  占位符 + 布局 + token；让用户提前纠偏
-5. 完整构建          →  组件、状态、动效；在关键决策点暂停确认
-6. 验证              →  交付前清单；无控制台错误，无私自新增色相
-```
-
-### 核心设计原则
-
-**反 AI 俗套清单。** Skill 明确禁止以下模式：
-- 紫粉蓝渐变背景
-- 带左侧彩色边框的卡片
-- Inter / Roboto / Arial / Fraunces / system-ui 字体
-- 用 emoji 充当图标
-- 编造的数据、假 logo 墙、虚假好评
-
-**oklch 色彩系统。** 在感知均匀的 oklch 色彩空间中派生颜色。相同的亮度值在人眼中看起来确实一样亮——HSL 做不到这一点，HSL 中亮度 50% 的黄色看起来比亮度 50% 的蓝色亮得多。
-
-**精选起点。** 六套经过验证的配色 × 字体组合，覆盖常见场景：
-
-| 风格 | 主色 | 字体组合 | 适用场景 |
-|---|---|---|---|
-| 现代科技感 | 蓝紫 | Space Grotesk + Inter | SaaS、开发者工具 |
-| 优雅杂志风 | 暖棕 | Newsreader + Outfit | 内容平台、博客 |
-| 高端品牌 | 近黑 | Sora + Plus Jakarta Sans | 奢侈品、金融 |
-| 活泼消费 | 珊瑚 | Plus Jakarta Sans + Outfit | 电商、社交 |
-| 极简专业 | 青蓝 | Outfit + Space Grotesk | 仪表盘、B2B |
-| 手作温度 | 焦糖 | Caveat + Newsreader | 餐饮、教育 |
-
----
-
-## 示例
-
-`demo/` 目录包含使用相同提示词、分别在有 Skill 和无 Skill 条件下生成的页面对比。
-
-### Demo 1：太空探索博物馆
-
-**提示词：** *"帮我做一个'太空探索博物馆'的线上展览首页——全屏 Hero、4 个核心展览介绍、一个至少 6 个节点的时间线、参观预约 CTA、页脚。整体风格要沉浸感强、有宇宙的深邃感。"*
-
-| | 无 Skill | 有 Skill |
+| Agent / Runtime | Skill 路径 | 状态 |
 |---|---|---|
-| **文件** | `demo/demo1.html` | `demo/demo1-with-skill.html` |
-| **色彩系统** | 硬编码 hex 值（#7cf0ff, #b388ff） | 基于 oklch 的 token 系统，使用 CSS 自定义属性 |
-| **字体** | Orbitron + Noto Serif SC | Instrument Serif + Space Grotesk + JetBrains Mono |
-| **布局** | 标准落地页结构 | 杂志编辑式布局，grid 组合排版 |
-| **细节** | 大量发光效果、霓虹渐变 | 克制的色彩方案、字体层级、装饰性数据元素 |
-| **整体感受** | 热情的初级设计师 | 有经验的设计总监 |
+| **Claude Code** | `.claude/skills/<name>/` 或走插件市场 | ✅ 已验证 |
+| **Claude.ai**（网页端） | Settings → Capabilities → Skills | ✅ 已验证 |
+| **Cursor** | `.agents/skills/<name>/` | ✅ 已验证 |
+| **Codex CLI** | `.codex/skills/<name>/` | ✅ 应该可用（手动拷贝） |
+| **Gemini CLI** | extension manifest | 🟡 未测试 |
+| **OpenCode** | `.opencode/skills/<name>/` | 🟡 未测试 |
 
-### Demo 2：摄影师作品集
-
-**提示词：** *"帮我做一个独立摄影师的个人作品集网站首页。"*
-
-| | 有 Skill |
-|---|---|
-| **文件** | `demo/demo2-with-skill.html` |
-| **角色塑造** | 虚构了北欧摄影师 "Mira Høst"，设计了一整套视觉身份 |
-| **配色** | 暖纸色浅底（#f2efe8）+ 墨色深文（#161513）—— 极度克制的双色调 |
-| **字体** | Instrument Serif（展示标题）+ Space Grotesk（界面）, 大量使用斜体 |
-| **布局** | 杂志编排式结构，编号分节、不对称网格、侧边竖排文字 |
-| **动效** | Hero 图片的慢速 Ken Burns 动画（24秒周期），胶片噪点纹理叠加 |
-| **导航** | `mix-blend-mode: difference` 顶栏 —— 在深浅背景间无缝过渡 |
+> `SKILL.md` 格式本身是可移植的——只要你的 Agent 支持 Skill 体系，把文件夹放进它扫描的目录就行。欢迎 PR 扩充这张表。
 
 ---
 
-## 文件结构
+## Skill 的标准结构
 
+本仓库每个 Skill 都遵循同一种最简结构：
+
+```text
+<skill-name>/
+├── SKILL.md            ← 必需：YAML frontmatter + 给 Agent 看的指令
+├── README.md           ← 给人看的英文文档（GitHub 渲染的就是它）
+├── README.zh-CN.md     ← 给人看的中文文档
+├── references/         ← 可选：Agent 按需加载的扩展文档
+├── scripts/            ← 可选：确定性的可执行代码
+└── assets/             ← 可选：模板、字体、图标等输出物素材
 ```
+
+frontmatter 是 Agent 判断"什么时候该用这个 Skill"的契约：
+
+```markdown
+---
+name: my-skill
+description: 用一句话清楚说明这个 Skill 是干什么的、什么时候应该用。
+              Agent 会用这段话判断是否激活本 Skill。
+---
+
+# My Skill
+
+详细指令、示例与约束写在这里。
+```
+
+完整规范见 [agentskills.io](https://agentskills.io) 与 [Anthropic 官方示例仓库](https://github.com/anthropics/skills)。
+
+---
+
+## 仓库结构
+
+```text
 .
-├── README.md                                    # 英文文档
-├── README.zh-CN.md                              # 本文件（中文）
-├── .agents/skills/web-design-engineer/
-│   ├── SKILL.md                                 # 主技能定义
-│   └── references/
-│       └── advanced-patterns.md                 # 代码模板与模式
-├── demo/
-│   ├── demo1.html                               # 太空博物馆 — 无 Skill
-│   ├── demo1-with-skill.html                    # 太空博物馆 — 有 Skill
-│   └── demo2-with-skill.html                    # 摄影师作品集 — 有 Skill
-└── prompt/
-    └── system.md                                # Claude Design 系统提示词（参考）
+├── skills/                              ← 所有 Skill 都在这里，每个一个文件夹
+│   ├── web-design-engineer/
+│   │   ├── SKILL.md
+│   │   ├── README.md  /  README.zh-CN.md
+│   │   └── references/advanced-patterns.md
+│   │
+│   ├── rag-skill/                       ← frontmatter name: kb-retriever
+│   │   ├── SKILL.md
+│   │   ├── README.md  /  README.zh-CN.md
+│   │   ├── references/  (pdf_reading.md、excel_reading.md、excel_analysis.md)
+│   │   └── scripts/convert_pdf_to_images.py
+│   │
+│   └── gpt-image-2/
+│       ├── SKILL.md
+│       ├── README.md  /  README.zh-CN.md
+│       ├── references/  (18 大类、70+ 个提示词模板)
+│       └── scripts/     (check-mode.js、generate.js、edit.js、shared.js)
+│
+├── .claude-plugin/
+│   └── marketplace.json                 ← Claude Code 插件市场清单
+│
+├── demo/                                ← 可直接打开的演示
+│   └── web-design-demo/
+│       └── demo2/                       ← web-design-engineer 的有/无 Skill 对比展示
+│           ├── index.html
+│           ├── demo1.html  /  demo1-with-skill.html
+│           └── demo2-with-skill.html
+│
+├── dist/                                ← 参考资料与展示站
+│   ├── prompt/
+│   │   └── claude-design-system-prompt.md   （Claude Design 原始系统提示词）
+│   └── web/                             （Vite + React 展示站，可选）
+│
+├── README.md  /  README.zh-CN.md        ← 集合首页（本文件）
+├── LICENSE
+└── .gitignore
 ```
 
 ---
 
-## 背景
+## 致谢
 
-此 Skill 的灵感来自 [Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs) 的系统提示词。Claude Design 是 Anthropic 于 2026 年 4 月推出的视觉设计产品。其系统提示词（约 420 行）编码了一套精密的设计原则、反模式和工作流约束，使其输出保持稳定的高品质。
+本集合站在以下工作的肩膀上：
 
-本项目将这些核心理念提取并精炼为一个可移植的 Skill，适用于任何 AI 编程代理——让你获得 Claude Design 级别的设计品位，同时摆脱产品锁定和用量限制。
-
-相比 Claude Design 原始提示词的主要新增内容：
-- **设计系统宣告步骤** —— 强制 AI 在编码前用自然语言说明设计 token
-- **v0 草稿策略** —— 一套具体的方法论，确保尽早展示半成品
-- **扩展的反俗套清单** —— 从真实 AI 输出中识别出的额外模式
-- **占位符哲学** —— 一套完整的框架，专业地处理缺失素材
-- **配色 × 字体配对表** —— 六套经过验证的视觉系统起点
-- **高级模式库** —— 常见 UI 模式的即用代码模板
+- **[Anthropic](https://www.anthropic.com)** —— [Agent Skills 规范](https://agentskills.io) 和 [`anthropics/skills`](https://github.com/anthropics/skills) 参考仓库。
+- **[Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs)** —— `web-design-engineer` 的灵感来源，原系统提示词保留在 [`dist/prompt/claude-design-system-prompt.md`](./dist/prompt/claude-design-system-prompt.md) 供参考。
+- 更广义的 OSS Skill 社区——延伸阅读：[`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) 和 [`obra/superpowers`](https://github.com/obra/superpowers)。
 
 ---
 
 ## 许可证
 
-MIT
+[MIT](./LICENSE) © [ConardLi](https://github.com/ConardLi)
