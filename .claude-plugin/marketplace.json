@@ -1,7 +1,7 @@
 {
   "name": "garden-skills",
   "owner": {
-    "name": "bytedance"
+    "name": "ConardLi"
   },
   "metadata": {
     "description": "A curated collection of agent skills covering visual web design, local knowledge-base retrieval, and GPT Image 2 image generation.",

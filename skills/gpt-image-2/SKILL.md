@@ -1,6 +1,6 @@
 ---
 name: gpt-image-2
-description: 面向 GPT Image 2 的图像生成 / 编辑技能。可在 3 种环境下使用：(A) Garden 本地模式，通过 OpenAI 兼容接口直接出图并落盘；(B) Host-Native 模式，把本 Skill 当作提示词工程指引，把渲染好的 prompt 交给宿主 Agent 自带的图像工具出图；(C) Advisor 模式，宿主无任何图像工具时退化为高质量 prompt 顾问。涵盖 18 大类、70+ 个结构化模板，覆盖海报 / UI / 产品 / 信息图 / 学术图 / 技术架构图 / 漫画 / 头像 / 编辑工作流等场景。
+description: 面向 GPT Image 2 的图像生成 / 编辑技能。可在 3 种环境下使用：(A) Garden 本地模式，通过 OpenAI 兼容接口直接出图并落盘；(B) Host-Native 模式，把本 Skill 当作提示词工程指引，把渲染好的 prompt 交给宿主 Agent 自带的图像工具出图；(C) Advisor 模式，宿主无任何图像工具时退化为高质量 prompt 顾问。涵盖 18 大类、80+ 个结构化模板，覆盖海报 / UI / 产品 / 信息图 / 学术图 / 技术架构图 / 漫画 / 头像 / 流程板 / 电影分镜 / IP 周边 / 编辑工作流等场景。
 ---
 
 # GPT Image 2
@@ -271,6 +271,7 @@ node skills/gpt-image-2/scripts/edit.js \
 - `product-card-overlay.md` — 落地页 hero / 详情页主图（人物 + 商品 + 卖点 + 价格）
 - `chat-interface-scene.md` — 聊天 / 对话界面样机（iMessage、微信、群聊、AI 助手）
 - `short-video-cover-ui.md` — 短视频封面 / 直播缩略图（YouTube、抖音、B 站、VTuber stream）
+- `landing-page-case-study.md` — 深色 SaaS / 营销 case study **长页面** UI mockup（多 section + 滚动叙事 + 数据卡 + CTA）
 
 ### 3. Product Visuals (`references/product-visuals/`)
 
@@ -281,6 +282,7 @@ node skills/gpt-image-2/scripts/edit.js \
 - `premium-studio-product.md` — 高级影棚商业产品图（杂志广告级氛围）
 - `packaging-showcase.md` — 礼盒 / 包装展示图（外盒 + 内容物展示）
 - `lifestyle-product-scene.md` — 生活方式产品场景图（商品出现在真实场景中）
+- `ecommerce-marketing-board.md` — 中式电商超复合销售看板（主图 + 详情页 + 卖点 + 使用步骤 + 场景 + TVC 分镜组合一图）
 
 ### 4. Maps (`references/maps/`)
 
@@ -290,6 +292,7 @@ node skills/gpt-image-2/scripts/edit.js \
 - `travel-route-map.md` — 旅行路线图（多日行程 / 单日 city walk / 户外路线）
 - `illustrated-city-map.md` — 城市风貌插画地图（地标 + 江山 + 文化元素）
 - `store-distribution-map.md` — 品牌门店 / 服务覆盖分布图
+- `itinerary-day-trip-map.md` — **一日游** split 海报（左 parchment 行程卡 + 右奇幻写实地图，5-7 站点严格对齐）
 
 ### 5. Slides & Visual Docs (`references/slides-and-visual-docs/`)
 
@@ -308,6 +311,10 @@ node skills/gpt-image-2/scripts/edit.js \
 - `campaign-kv.md` — Campaign Key Visual + 衍生 layout 系统
 - `banner-hero.md` — Web hero / 落地页 / app banner（横向构图 + CTA）
 - `editorial-cover.md` — 杂志 / 期刊 / 出版物封面
+- `biomimetic-concept-poster.md` — 仿生工业设计概念海报（自然原型 → 演化条 → hero render → 多视图技术图）
+- `vintage-editorial-infographic.md` — 复古档案 / 1940s 编辑式信息图海报（人物 + 公式 + 时间轴 + 模型，Bell Labs 风）
+- `character-catalog-poster.md` — 同一角色多版本信息图海报（星座 / 元素 / 朝代 / 人格系列卡片）
+- `lineup-comparison-poster.md` — 系列产品 lineup 对比信息图海报（30+ SKU 同图 + 图例 + 等级 key）
 
 ### 7. Portraits & Characters (`references/portraits-and-characters/`)
 
@@ -317,6 +324,7 @@ node skills/gpt-image-2/scripts/edit.js \
 - `founder-portrait.md` — 创始人媒体大片肖像（戏剧灯光 + 留标题位）
 - `virtual-host.md` — VTuber / 虚拟主播个人卡 + 直播预览
 - `character-sheet.md` — 角色综合设定稿（三视图 + 表情 + 服装 + 配色板）
+- `pose-reference-sheet.md` — N×N 姿势 / 动作字典参考表（同一角色多姿势，舞蹈 / 战斗 / 健身）
 
 ### 8. Scenes & Illustrations (`references/scenes-and-illustrations/`)
 
@@ -356,6 +364,9 @@ node skills/gpt-image-2/scripts/edit.js \
 - `anime-key-visual.md` — 单图动漫 KV / 轻小说封面 / IP 海报
 - `character-relationship-diagram.md` — 角色关系图海报（卡片 + 关系连线 + 图例）
 - `recipe-process-flowchart.md` — 食谱 / 教程 / 流程步骤图（编号 + 插图 + 说明）
+- `product-tvc-storyboard.md` — 产品 TVC 商业广告分镜板（9-panel 实拍质感 + 镜头描述 + 时长）
+- `cinematic-storyboard-grid.md` — **电影感叙事分镜** contact sheet（3×4 / 4×4，连续叙事 + cinematic still）
+- `process-photo-board.md` — 真人 cinematic 流程板（装备穿戴 / 化妆 / 训练 / 操作分解，编号 + 步骤递进）
 
 ### 12. Grids & Collages (`references/grids-and-collages/`)
 
@@ -365,6 +376,7 @@ node skills/gpt-image-2/scripts/edit.js \
 - `lookbook-grid.md` — 7 日 lookbook / 9 宫 self-care / TOP N 清单图
 - `mixed-style-multi-panel.md` — 多风格混合拼贴（同一主体不同画风演绎）
 - `anime-pitch-board.md` — 动漫 / 游戏 / 影视立项 pitch board（KV + 角色 + 世界观 + 文案）
+- `ad-banner-multi-grid.md` — 多行业 / 多主题混合广告 banner 网格（每格独立行业 + 风格 + 文案）
 
 ### 13. Branding & Packaging (`references/branding-and-packaging/`)
 
@@ -374,6 +386,8 @@ node skills/gpt-image-2/scripts/edit.js \
 - `mascot-brand-kit.md` — 吉祥物多面板品牌识别套装（主形象 + 三视图 + 表情 + 应用）
 - `cosmetic-packaging.md` — 化妆品 / 护肤品 单瓶 / 系列 / 礼盒包装
 - `beverage-label-design.md` — 饮料 / 食品 / 调味品标签设计（国潮 / 日式 / 西式）
+- `full-mascot-brand-doc.md` — **18+ 模块大型品牌识别 + 吉祥物全流程文档**（DNA / moodboard / 草图 / 线稿 / 3D / 配色 / 材质 / 应用一图概览）
+- `character-merch-board.md` — IP 角色 + 周边 / 包装 / 海报 / 社交 profile 多元素综合品牌板
 
 ### 14. Typography & Text Layout (`references/typography-and-text-layout/`)
 

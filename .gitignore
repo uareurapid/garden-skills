@@ -23,3 +23,5 @@ dist/web/dist-ssr/
 
 # Skill runtime artifacts
 garden-gpt-image-2/
+
+.agents/
