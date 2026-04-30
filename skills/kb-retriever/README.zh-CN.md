@@ -1,12 +1,10 @@
-# RAG Skill — 本地知识库检索
+# Kb Retriever Skill — 本地知识库检索
 
 > 让 AI Agent 高效回答基于**本地多格式知识库目录**的问题。靠分层索引导航 + 渐进式检索完成，不把整文件塞进 context。
 
 [English](./README.md) · [返回集合首页](../../README.zh-CN.md)
 
-> 本 Skill 的 frontmatter `name` 是 **`kb-retriever`**，文件夹保持 `rag-skill/` 是为了在仓库索引里更直观。
-
----
+![Kb Retriever Skill](../../dist/imgs/kb-retriever-skill.png)
 
 ## 这个 Skill 干什么
 
@@ -32,7 +30,7 @@
 ## Skill 结构
 
 ```
-skills/rag-skill/
+skills/kb-retriever/
 ├── SKILL.md                            主技能（frontmatter name: kb-retriever）
 ├── README.md  /  README.zh-CN.md       本文档
 ├── references/
@@ -56,7 +54,7 @@ skills/rag-skill/
 ```
 your-project/
 ├── .claude/skills/  或  .agents/skills/
-│   └── rag-skill/                ← 本 Skill 目录
+│   └── kb-retriever/             ← 本 Skill 目录
 └── knowledge/                    ← ← ← 你的知识库
     ├── data_structure.md         （根级索引，模板见下）
     ├── <领域-1>/

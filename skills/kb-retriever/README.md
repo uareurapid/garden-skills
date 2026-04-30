@@ -1,12 +1,10 @@
-# RAG Skill — Local Knowledge-Base Retriever
+# Kb Retriever Skill — Local Knowledge-Base Retriever
 
 > A skill for AI agents to efficiently answer questions over a **local, multi-format knowledge directory** using hierarchical index navigation and progressive retrieval — without ever loading whole files into context.
 
 [中文文档](./README.zh-CN.md) · [Back to collection root](../../README.md)
 
-> The frontmatter `name` of this skill is **`kb-retriever`**. The folder is kept as `rag-skill/` for clarity in the repository index.
-
----
+![Kb Retriever Skill](../../dist/imgs/kb-retriever-skill.png)
 
 ## What it does
 
@@ -32,7 +30,7 @@ Point the agent at a local directory full of mixed-format files (Markdown, PDF, 
 ## Skill structure
 
 ```
-skills/rag-skill/
+skills/kb-retriever/
 ├── SKILL.md                            Main skill (frontmatter name: kb-retriever)
 ├── README.md  /  README.zh-CN.md       This document
 ├── references/
@@ -56,7 +54,7 @@ Put a `knowledge/` directory at the root of the workspace where you invoke the a
 ```
 your-project/
 ├── .claude/skills/  or  .agents/skills/
-│   └── rag-skill/                ← this skill folder
+│   └── kb-retriever/             ← this skill folder
 └── knowledge/                    ← ← ← your knowledge base
     ├── data_structure.md         (root-level index, see template below)
     ├── <domain-1>/
