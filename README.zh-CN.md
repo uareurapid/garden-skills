@@ -19,6 +19,9 @@
 ## 目录
 
 - [集合内的 Skills](#集合内的-skills)
+  - [web-design-engineer（设计 / 前端）](#web-design-engineer)
+  - [gpt-image-2（图像生成 / Prompt）](#gpt-image-2)
+  - [kb-retriever（本地知识库检索）](#kb-retriever)
 - [安装](#安装)
   - [方式 A · Claude Code 插件市场](#方式-a--claude-code-插件市场)
   - [方式 B · 手动拷贝到项目](#方式-b--手动拷贝到项目)
@@ -50,7 +53,7 @@
 - 包含 inline React + Babel、CSS tokens、`oklch()` 配色、container queries、reduced-motion 等实现规则
 - 提供高级模式参考，覆盖设备框、幻灯片引擎、动画时间线、仪表盘等常见 Web 产物
 
-链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Demo](./demo/web-design-demo)
+链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo)
 
 ---
 
@@ -71,7 +74,7 @@
 - 同时覆盖图像生成和图像编辑，并配套专门工作流与脚本
 - Garden 模式下会把 prompt 与生成图片保存到 `garden-gpt-image-2/`，方便复用、审查和版本管理
 
-链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md)
+链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website)
 
 ---
 
@@ -221,14 +224,17 @@ description: 用一句话清楚说明这个 Skill 是干什么的、什么时候
 │           ├── demo1.html  /  demo1-with-skill.html
 │           └── demo2-with-skill.html
 │
-├── dist/                                ← 参考资料与展示站
+├── dist/                                ← 共享展示素材
 │   ├── imgs/                            ← README Skill 海报
 │   │   ├── web-design-skill.png
 │   │   ├── gpt-image-2-skill.png
 │   │   └── kb-retriever-skill.png
 │   ├── prompt/
 │   │   └── claude-design-system-prompt.md   （Claude Design 原始系统提示词）
-│   └── web/                             （Vite + React 展示站，可选）
+│
+├── website/                             ← 独立展示网站
+│   ├── gpt-image2-website/              ← GPT Image 2 Skill 展示站
+│   └── web-design-website/              ← web-design-engineer Skill 展示站
 │
 ├── README.md  /  README.zh-CN.md        ← 集合首页（本文件）
 ├── LICENSE

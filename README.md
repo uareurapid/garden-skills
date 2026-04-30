@@ -19,6 +19,9 @@
 ## Table of contents
 
 - [What's inside](#whats-inside)
+  - [web-design-engineer (Design / Frontend)](#web-design-engineer)
+  - [gpt-image-2 (Image Generation / Prompting)](#gpt-image-2)
+  - [kb-retriever (Local Knowledge Base Retrieval)](#kb-retriever)
 - [Install](#install)
   - [Option A · Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)
   - [Option B · Manual copy into your project](#option-b--manual-copy-into-your-project)
@@ -50,7 +53,7 @@ Highlights:
 - Includes practical implementation rules for inline React + Babel, CSS tokens, `oklch()` color work, container queries, and reduced-motion handling
 - Ships an advanced patterns reference for device frames, slide engines, animation timelines, dashboards, and other reusable web artifacts
 
-Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Demo](./demo/web-design-demo)
+Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo)
 
 ---
 
@@ -71,7 +74,7 @@ Highlights:
 - Covers both image generation and image editing through dedicated workflows and scripts
 - Saves prompts and generated images under `garden-gpt-image-2/` in Garden mode for reuse, review, and versioning
 
-Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md)
+Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website)
 
 ---
 
@@ -221,14 +224,17 @@ For the full spec, see [agentskills.io](https://agentskills.io) and the [officia
 │           ├── demo1.html  /  demo1-with-skill.html
 │           └── demo2-with-skill.html
 │
-├── dist/                                ← reference assets and showcase site
+├── dist/                                ← shared reference assets
 │   ├── imgs/                            ← README skill posters
 │   │   ├── web-design-skill.png
 │   │   ├── gpt-image-2-skill.png
 │   │   └── kb-retriever-skill.png
 │   ├── prompt/
 │   │   └── claude-design-system-prompt.md   (original Claude Design system prompt)
-│   └── web/                             (Vite + React showcase site, optional)
+│
+├── website/                             ← standalone showcase websites
+│   ├── gpt-image2-website/              ← GPT Image 2 skill website
+│   └── web-design-website/              ← web-design-engineer skill website
 │
 ├── README.md  /  README.zh-CN.md        ← collection index (this file)
 ├── LICENSE
