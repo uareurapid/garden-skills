@@ -18,24 +18,18 @@
 
 ## Table of contents
 
-- [What's inside](#whats-inside)
-  - [web-video-presentation (Web Video / Presentation)](#web-video-presentation)
-  - [web-design-engineer (Design / Frontend)](#web-design-engineer)
-  - [gpt-image-2 (Image Generation / Prompting)](#gpt-image-2)
-  - [kb-retriever (Local Knowledge Base Retrieval)](#kb-retriever)
-- [Install](#install)
-  - [Option A · Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)
-  - [Option B · Manual copy into your project](#option-b--manual-copy-into-your-project)
-  - [Option C · Git submodule](#option-c--git-submodule)
-- [Compatibility](#compatibility)
-- [Anatomy of a Skill](#anatomy-of-a-skill)
-- [Repository layout](#repository-layout)
-- [Acknowledgments](#acknowledgments)
-- [License](#license)
+| Overview | Skills | Install |
+|---|---|---|
+| [What's inside](#whats-inside)<br>[Compatibility](#compatibility) | [Skill gallery](#whats-inside)<br>[Anatomy of a Skill](#anatomy-of-a-skill)<br>[Repository layout](#repository-layout) | [Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)<br>[Manual copy](#option-b--manual-copy-into-your-project)<br>[Git submodule](#option-c--git-submodule) |
 
 ---
 
 ## What's inside
+
+| Skill | Skill |
+|---|---|
+| [**web-video-presentation**](#web-video-presentation)<br>Web video / presentation | [**web-design-engineer**](#web-design-engineer)<br>Design / frontend |
+| [**gpt-image-2**](#gpt-image-2)<br>Image generation / prompting | [**kb-retriever**](#kb-retriever)<br>Local knowledge retrieval |
 
 ### [`web-video-presentation`](./skills/web-video-presentation)
 

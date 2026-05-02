@@ -18,24 +18,18 @@
 
 ## 目录
 
-- [集合内的 Skills](#集合内的-skills)
-  - [web-video-presentation（网页视频 / 演示工程）](#web-video-presentation)
-  - [web-design-engineer（设计 / 前端）](#web-design-engineer)
-  - [gpt-image-2（图像生成 / Prompt）](#gpt-image-2)
-  - [kb-retriever（本地知识库检索）](#kb-retriever)
-- [安装](#安装)
-  - [方式 A · Claude Code 插件市场](#方式-a--claude-code-插件市场)
-  - [方式 B · 手动拷贝到项目](#方式-b--手动拷贝到项目)
-  - [方式 C · Git Submodule](#方式-c--git-submodule)
-- [兼容性](#兼容性)
-- [Skill 的标准结构](#skill-的标准结构)
-- [仓库结构](#仓库结构)
-- [致谢](#致谢)
-- [许可证](#许可证)
+| 总览 | Skills | 安装 |
+|---|---|---|
+| [集合内的 Skills](#集合内的-skills)<br>[兼容性](#兼容性) | [Skill 展示区](#集合内的-skills)<br>[Skill 的标准结构](#skill-的标准结构)<br>[仓库结构](#仓库结构) | [Claude Code 插件市场](#方式-a--claude-code-插件市场)<br>[手动拷贝](#方式-b--手动拷贝到项目)<br>[Git Submodule](#方式-c--git-submodule) |
 
 ---
 
 ## 集合内的 Skills
+
+| Skill | Skill |
+|---|---|
+| [**web-video-presentation**](#web-video-presentation)<br>网页视频 / 演示工程 | [**web-design-engineer**](#web-design-engineer)<br>设计 / 前端 |
+| [**gpt-image-2**](#gpt-image-2)<br>图像生成 / Prompt | [**kb-retriever**](#kb-retriever)<br>本地知识库检索 |
 
 ### [`web-video-presentation`](./skills/web-video-presentation)
 
