@@ -47,9 +47,9 @@
 
 ## Table of contents
 
-| Overview | Skills | Install |
-|---|---|---|
-| [Skill gallery](#skills-gallery)<br>[Compatibility](#compatibility) | [web-video-presentation](#web-video-presentation)<br>[web-design-engineer](#web-design-engineer)<br>[gpt-image-2](#gpt-image-2)<br>[kb-retriever](#kb-retriever) | [Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)<br>[Manual copy](#option-b--manual-copy-into-your-project)<br>[Git submodule](#option-c--git-submodule) |
+| Install | Guide | Project | Meta |
+|---|---|---|---|
+| [Install](#install)<br>[Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)<br>[Manual copy](#option-b--manual-copy-into-your-project)<br>[Git submodule](#option-c--git-submodule) | [Compatibility](#compatibility)<br>[Anatomy of a Skill](#anatomy-of-a-skill) | [Repository layout](#repository-layout) | [Acknowledgments](#acknowledgments)<br>[License](#license) |
 
 ---
 

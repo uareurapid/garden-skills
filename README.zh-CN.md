@@ -47,9 +47,9 @@
 
 ## 目录
 
-| 总览 | Skills | 安装 |
-|---|---|---|
-| [Skill 展示区](#skills-gallery)<br>[兼容性](#兼容性) | [web-video-presentation](#web-video-presentation)<br>[web-design-engineer](#web-design-engineer)<br>[gpt-image-2](#gpt-image-2)<br>[kb-retriever](#kb-retriever) | [Claude Code 插件市场](#方式-a--claude-code-插件市场)<br>[手动拷贝](#方式-b--手动拷贝到项目)<br>[Git Submodule](#方式-c--git-submodule) |
+| 安装 | 指南 | 项目 | 其他 |
+|---|---|---|---|
+| [安装](#安装)<br>[Claude Code 插件市场](#方式-a--claude-code-插件市场)<br>[手动拷贝](#方式-b--手动拷贝到项目)<br>[Git Submodule](#方式-c--git-submodule) | [兼容性](#兼容性)<br>[Skill 的标准结构](#skill-的标准结构) | [仓库结构](#仓库结构) | [致谢](#致谢)<br>[许可证](#许可证) |
 
 ---
 
