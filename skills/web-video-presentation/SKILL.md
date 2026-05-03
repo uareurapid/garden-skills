@@ -61,6 +61,31 @@ my-video/
 
 ---
 
+## 硬性自检协议（贯穿整个 Skill）
+
+下面三个产出，每一个**完成后必须走自检 → 修复 → 再汇报 / 推进**：
+
+| 产出 | 自检清单出处 |
+|---|---|
+| `script.md` | [`SCRIPT-STYLE.md`](references/SCRIPT-STYLE.md) 三层自检（形式 / 风骨 / 念出来） |
+| `outline.md` | [`OUTLINE-FORMAT.md`](references/OUTLINE-FORMAT.md) 自检 |
+| 单章实现完成 | [`CHAPTER-CRAFT.md`](references/CHAPTER-CRAFT.md) 完工自检 |
+
+**执行方式**（按能力降级，**优先用更隔离的方式**）：
+
+1. **Agent Teams（最优）**：开一个独立的 reviewer agent，给它"产出文件
+   路径 + 对应清单 + 关键上下文"，让它逐项核查并**严格汇报结论**
+   （哪几条 pass / 哪几条 fail + 证据 + 改写建议）。
+2. **subAgent（次优）**：没有 Teams 能力但能开 subagent 就用 subagent
+   走同样流程。
+3. **自检（兜底）**：当前 agent 都没有上述能力，就自己**严格逐项**
+   核查 —— 不允许目测一遍就放行。
+
+**铁律**：拿到结论后**先按 fail 项把产出改完**，再向用户汇报"做完了
++ 自检结论 + 改了什么"。**直接拿原始结论汇报但不修复 = 违规**。
+
+---
+
 ## 各阶段文件读取指南
 
 不同阶段读不同的文件。**长会话里 agent 容易遗忘原则**，特别是
@@ -116,7 +141,9 @@ Phase 2.4 的"实现单章"会重复 N 次 —— 每次都要回看核心约束
 > 的"内容驱动决策树"自由设计，才有真正的视频感。详见
 > [`CHAPTER-CRAFT.md`](references/CHAPTER-CRAFT.md) Part 0 原则 7。
 
-落盘后**进入 Checkpoint Plan**。
+**落盘后必须先走自检再进 Checkpoint Plan**：按上文「硬性自检协议」分别
+对 `script.md` / `outline.md` 执行（优先 Agent Teams → subAgent → 自检），
+按结论修复完成后再进入 Checkpoint Plan。
 
 ---
 
@@ -294,7 +321,8 @@ rm -rf presentation/src/chapters/01-example
 - **逐步揭示**：清单 / 列表必须 1 项 = 1 step，禁一次全展示
 - **双源原则**：节奏跟口播稿（顺序不能乱），细节回原文章抽（信息池 +
   本章 article 段落）
-- **完工自检逐项过**，不达标回去改
+- **完工自检逐项过**，不达标回去改 —— 按上文「硬性自检协议」执行
+  （优先 Agent Teams → subAgent → 自检），**改完再向用户汇报本章交付**
 
 ### 2.5 大改后 bump STORAGE_KEY
 
