@@ -346,7 +346,7 @@ async function main() {
   console.log("");
   console.log(`Commit: ${c("dim", commitMsg)}`);
   console.log(`Tags:   ${c("dim", tags.join(" "))}`);
-  console.log(`Push:   ${c("dim", `git push origin ${args.branch} ${tags.join(" ")}`)}`);
+  console.log(`Push:   ${c("dim", `git push origin ${args.branch}, then each tag individually`)}`);
 
   if (args.dryRun) {
     console.log(c("yellow", "\n--dry-run set, stopping before any writes."));
@@ -397,8 +397,19 @@ async function main() {
   }
 
   console.log(c("bold", "[4/4] Pushing..."));
-  git(["push", "origin", args.branch, ...tags]);
-  console.log(c("green", "      pushed."));
+  // Push the branch first (carries the manifest bump + README sync commit, if
+  // any), then push each tag in its own `git push`. We deliberately avoid
+  // the all-in-one `git push origin main tag1 tag2 ...` form because in that
+  // mode GitHub occasionally collapses the per-tag CreateEvents and the
+  // tag-triggered Release workflow simply never fires. One push per tag
+  // guarantees one webhook delivery → one workflow run.
+  git(["push", "origin", args.branch]);
+  console.log(`      pushed: ${args.branch}`);
+  for (const tag of tags) {
+    git(["push", "origin", `refs/tags/${tag}`]);
+    console.log(`      pushed: ${tag}`);
+  }
+  console.log(c("green", "      all pushed."));
 
   // ---- done -------------------------------------------------------------
   let originUrl = "";
