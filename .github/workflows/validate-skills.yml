@@ -32,11 +32,5 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Lint manifests + skill structure
-        run: node scripts/release/list-skills.mjs
-
-      - name: Smoke-pack every skill (no upload)
-        run: node scripts/release/pack-skill.mjs --all --out dist/release
-
-      - name: Verify README download blocks are in sync with manifests
-        run: node scripts/release/update-readme.mjs --check
+      - name: Validate manifests, smoke-pack, and verify README sync
+        run: npm run validate

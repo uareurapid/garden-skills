@@ -47,9 +47,9 @@
 
 ## 目录
 
-| 安装 | 指南 | 项目 | 其他 |
-|---|---|---|---|
-| [安装](#安装)<br>[`skills` CLI（npx）](#方式-a--skills-clinpx)<br>[Claude Code 插件市场](#方式-b--claude-code-插件市场)<br>[Releases 钉版本 `.zip`](#方式-c--releases-钉版本-zip)<br>[手动拷贝](#方式-d--手动拷贝到项目)<br>[Git Submodule](#方式-e--git-submodule) | [兼容性](#兼容性)<br>[Skill 的标准结构](#skill-的标准结构)<br>[版本与发布](#版本与发布) | [仓库结构](#仓库结构) | [致谢](#致谢)<br>[许可证](#许可证) |
+| 安装 | 使用 | 参与共建 |
+|---|---|---|
+| [安装](#安装)<br>[`skills` CLI（npx）](#方式-a--skills-clinpx)<br>[Claude Code 插件市场](#方式-b--claude-code-插件市场)<br>[Releases 钉版本 `.zip`](#方式-c--releases-钉版本-zip)<br>[手动拷贝](#方式-d--手动拷贝到项目)<br>[Git Submodule](#方式-e--git-submodule) | [兼容性](#兼容性)<br>[什么是 Skill？](#什么是-skill) | [贡献](#贡献)<br>[致谢](#致谢)<br>[许可证](#许可证) |
 
 ---
 
@@ -299,185 +299,42 @@ git checkout web-design-engineer-v1.0.0
 
 ---
 
-## Skill 的标准结构
+## 什么是 Skill？
 
-本仓库每个 Skill 都遵循同一种最简结构：
+**Skill** 就是 Agent 可以按需加载的一个自包含文件夹。它的核心是一个
+`SKILL.md`（YAML frontmatter + 指令），按需配上 reference 文档、脚本和素材：
 
 ```text
 <skill-name>/
-├── SKILL.md            ← 必需：YAML frontmatter + 给 Agent 看的指令
-├── README.md           ← 给人看的英文文档（GitHub 渲染的就是它）
-├── README.zh-CN.md     ← 给人看的中文文档
-├── references/         ← 可选：Agent 按需加载的扩展文档
-├── scripts/            ← 可选：确定性的可执行代码
-└── assets/             ← 可选：模板、字体、图标等输出物素材
+├── SKILL.md      ← 必需：什么时候用 + 怎么用
+├── README.md     ← 给人看的文档
+├── references/   ← 可选：Agent 按需加载的扩展文档
+├── scripts/      ← 可选：确定性的可执行代码
+└── assets/       ← 可选：模板、字体、图标等
 ```
 
-frontmatter 是 Agent 判断"什么时候该用这个 Skill"的契约：
-
-```markdown
----
-name: my-skill
-description: 用一句话清楚说明这个 Skill 是干什么的、什么时候应该用。
-              Agent 会用这段话判断是否激活本 Skill。
----
-
-# My Skill
-
-详细指令、示例与约束写在这里。
-```
-
-完整规范见 [agentskills.io](https://agentskills.io) 与 [Anthropic 官方示例仓库](https://github.com/anthropics/skills)。
+Agent 会根据 frontmatter 里的 `description` 决定要不要激活这个 Skill——
+所以 description 就是你和 Agent 之间的契约。完整规范见
+[agentskills.io](https://agentskills.io) 与
+[Anthropic 官方示例仓库](https://github.com/anthropics/skills)。
 
 ---
 
-## 版本与发布
+## 贡献
 
-每个 Skill **独立**版本号，遵循 [SemVer](https://semver.org/)，写在
-`skills/<name>/manifest.json` 里：
+欢迎提 issue、贡献新的 Skill、或者改进发版工具链。
 
-```json
-{
-  "name": "web-design-engineer",
-  "version": "1.0.0",
-  "category": "Design / Frontend",
-  "description": "…",
-  "compat": ["claude-code", "claude-ai", "cursor", "codex-cli", "gemini-cli", "opencode"]
-}
-```
+维护者向的文档——仓库结构、发版流程、版本号规则、CI 工作流、常见问题——
+都在 [**`CONTRIBUTING.zh-CN.md`**](./CONTRIBUTING.zh-CN.md)
+（[English](./CONTRIBUTING.md)）。新增 Skill 或者发版前先读那份。
 
-bump 规则：
-
-| 变更 | bump |
-|---|---|
-| 新增可选 reference / 新模板 / `SKILL.md` 微调 | **patch** |
-| `SKILL.md` 工作流改动、`references/` 结构调整、新增必需步骤 | **minor** |
-| 重命名 Skill、删除文件、frontmatter 破坏性变更 | **major** |
-
-### 发版
-
-直接跑这个交互式脚本，一条命令搞定整个发版流程：
+快速上手：
 
 ```bash
-node scripts/release/cut-release.mjs
-```
-
-它会：
-
-1. 自检（在 `main`、工作区干净、和 `origin` 同步）。
-2. 扫描每个 Skill，找到上一次的 release tag，列出之后的所有 commit。
-3. 对每个有新提交的 Skill 提示 **patch / minor / major / skip**
-   （首次发版的 Skill 自动走 "initial release"）。
-4. 展示最终计划，询问一次确认。
-5. 改 manifest、同步 README 下载链接、commit、打 tag，最后**原子地**用一次
-   `git push` 把 commit 和所有 tag 一起推出去。
-
-常用变体：
-
-```bash
-node scripts/release/cut-release.mjs --dry-run     # 只预览，不写不推
-node scripts/release/cut-release.mjs --yes         # 跳过最后的确认提示
-node scripts/release/cut-release.mjs --skill web-design-engineer --bump minor
-```
-
-push 之后，[`.github/workflows/release-skill.yml`](./.github/workflows/release-skill.yml)
-接管：对每个新 tag 都会自动：
-
-1. 再校验一次 tag 与 `manifest.json#version` 是否一致（防漂移）。
-2. 把 `skills/<name>/` 打成 `<name>-<version>.zip` + `.sha256`。
-3. 基于该 Skill 上一个 tag 之后的 `git log` 生成 release notes。
-4. 创建带 zip + sha256 的 [GitHub Release](https://github.com/ConardLi/garden-skills/releases)。
-5. 重写 README 里那个 Skill 对应的 `下载 v<版本> .zip` 链接，commit 回 `main`。
-
-每个 PR 都会被 [`.github/workflows/validate-skills.yml`](./.github/workflows/validate-skills.yml)
-拦一道：再校验 manifest、空跑一遍打包、检查 README 下载链接是否同步。
-
-如果你要手动走（debug 用），等价于：
-
-```bash
-# 改完 skills/<name>/manifest.json#version 后：
-node scripts/release/update-readme.mjs
-git commit -am "release(<name>): <X.Y.Z>"
-git tag <name>-v<X.Y.Z>
-git push origin main <name>-v<X.Y.Z>
-```
-
-维护者常用命令：
-
-```bash
-node scripts/release/list-skills.mjs           # 列出 skills + manifest 状态
-node scripts/release/pack-skill.mjs --all      # 本地空跑打包所有 skill
-node scripts/release/update-readme.mjs --check # 像 CI 一样检查 README 是否同步
-```
-
----
-
-## 仓库结构
-
-```text
-.
-├── skills/                              ← 所有 Skill 都在这里，每个一个文件夹
-│   ├── web-video-presentation/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json                ← name / version / category / compat
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (原则、outline、主题、音频、录屏)
-│   │   ├── scripts/scaffold.sh
-│   │   ├── templates/
-│   │   └── themes/
-│   │
-│   ├── web-design-engineer/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   └── references/advanced-patterns.md
-│   │
-│   ├── gpt-image-2/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (18 大类、70+ 个提示词模板)
-│   │   └── scripts/     (check-mode.js、generate.js、edit.js、shared.js)
-│   │
-│   └── kb-retriever/
-│       ├── SKILL.md
-│       ├── manifest.json
-│       ├── README.md  /  README.zh-CN.md
-│       ├── references/  (pdf_reading.md、excel_reading.md、excel_analysis.md)
-│       └── scripts/convert_pdf_to_images.py
-│
-├── scripts/release/                     ← 发版工具（零依赖 Node ESM）
-│   ├── pack-skill.mjs                   ← skill → 钉版本 .zip + .sha256
-│   ├── update-readme.mjs                ← 重写 <!-- DOWNLOAD:*:* --> 区块
-│   ├── list-skills.mjs                  ← 查看 manifest + 结构状态
-│   └── lib/skills.mjs                   ← 共享辅助函数
-│
-├── .github/workflows/
-│   ├── release-skill.yml                ← tag 触发的单 Skill 发版
-│   └── validate-skills.yml              ← PR 守门
-│
-├── .claude-plugin/
-│   └── marketplace.json                 ← Claude Code 插件市场清单
-│
-├── demo/                                ← 可直接打开的演示
-│   └── web-design-demo/
-│       └── demo2/                       ← web-design-engineer 的有/无 Skill 对比展示
-│           ├── index.html
-│           ├── demo1.html  /  demo1-with-skill.html
-│           └── demo2-with-skill.html
-│
-├── dist/                                ← 共享展示素材
-│   ├── imgs/                            ← README Skill 海报
-│   ├── prompt/
-│   │   └── claude-design-system-prompt.md   （Claude Design 原始系统提示词）
-│
-├── website/                             ← 独立展示网站
-│   ├── gpt-image2-website/              ← GPT Image 2 Skill 展示站
-│   └── web-design-website/              ← web-design-engineer Skill 展示站
-│
-├── README.md  /  README.zh-CN.md        ← 集合首页（本文件）
-├── LICENSE
-└── .gitignore
+git clone https://github.com/ConardLi/garden-skills.git
+cd garden-skills
+npm run list      # 列出所有 Skill + manifest 状态
+npm run validate  # 跑一遍和 PR CI 完全一样的检查
 ```
 
 ---

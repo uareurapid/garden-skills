@@ -47,9 +47,9 @@
 
 ## Table of contents
 
-| Install | Guide | Project | Meta |
-|---|---|---|---|
-| [Install](#install)<br>[`skills` CLI (npx)](#option-a--skills-cli-npx)<br>[Claude Code plugin marketplace](#option-b--claude-code-plugin-marketplace)<br>[Pinned `.zip` from Releases](#option-c--pinned-zip-from-releases)<br>[Manual copy](#option-d--manual-copy-into-your-project)<br>[Git submodule](#option-e--git-submodule) | [Compatibility](#compatibility)<br>[Anatomy of a Skill](#anatomy-of-a-skill)<br>[Versioning & releases](#versioning--releases) | [Repository layout](#repository-layout) | [Acknowledgments](#acknowledgments)<br>[License](#license) |
+| Install | Use | Contribute |
+|---|---|---|
+| [Install](#install)<br>[`skills` CLI (npx)](#option-a--skills-cli-npx)<br>[Claude Code plugin marketplace](#option-b--claude-code-plugin-marketplace)<br>[Pinned `.zip` from Releases](#option-c--pinned-zip-from-releases)<br>[Manual copy](#option-d--manual-copy-into-your-project)<br>[Git submodule](#option-e--git-submodule) | [Compatibility](#compatibility)<br>[What is a Skill?](#what-is-a-skill) | [Contributing](#contributing)<br>[Acknowledgments](#acknowledgments)<br>[License](#license) |
 
 ---
 
@@ -303,192 +303,47 @@ git checkout web-design-engineer-v1.0.0
 
 ---
 
-## Anatomy of a Skill
+## What is a Skill?
 
-Every skill in this repo follows the same minimal shape:
+A **Skill** is a self-contained folder the agent can load on-demand. It's
+just a `SKILL.md` (YAML frontmatter + instructions), optionally accompanied
+by reference docs, scripts, and assets:
 
 ```text
 <skill-name>/
-├── SKILL.md            ← required: YAML frontmatter + instructions for the agent
-├── README.md           ← English docs for humans (this is what GitHub renders)
-├── README.zh-CN.md     ← Chinese docs for humans
-├── references/         ← optional: docs the agent loads on-demand
-├── scripts/            ← optional: deterministic executable code
-└── assets/             ← optional: templates, fonts, icons used in outputs
+├── SKILL.md      ← required: when to use it + how to do it
+├── README.md     ← human-facing docs
+├── references/   ← optional: extended docs the agent loads on demand
+├── scripts/      ← optional: deterministic executable helpers
+└── assets/       ← optional: templates, fonts, icons
 ```
 
-Frontmatter is the contract that tells the agent *when* to use the skill:
-
-```markdown
----
-name: my-skill
-description: A clear sentence about what this skill does and when to use it.
-              The agent uses this to decide whether to load the skill.
----
-
-# My Skill
-
-Detailed instructions, examples, and constraints go here.
-```
-
-For the full spec, see [agentskills.io](https://agentskills.io) and the [official examples from Anthropic](https://github.com/anthropics/skills).
+The agent decides whether to activate the skill from the `description` line
+in the frontmatter — so the description is the contract between you and the
+agent. For the full spec, see [agentskills.io](https://agentskills.io) and
+[Anthropic's reference repository](https://github.com/anthropics/skills).
 
 ---
 
-## Versioning & releases
+## Contributing
 
-Each skill is versioned **independently** with [SemVer](https://semver.org/),
-declared in `skills/<name>/manifest.json`:
+Bug reports, new skills, and tooling improvements are all welcome.
 
-```json
-{
-  "name": "web-design-engineer",
-  "version": "1.0.0",
-  "category": "Design / Frontend",
-  "description": "…",
-  "compat": ["claude-code", "claude-ai", "cursor", "codex-cli", "gemini-cli", "opencode"]
-}
-```
+The maintainer-facing docs — repository layout, release process, version
+rules, CI workflow, troubleshooting — live in
+[**`CONTRIBUTING.md`**](./CONTRIBUTING.md) ([中文](./CONTRIBUTING.zh-CN.md)).
+Read that first if you want to add a skill or cut a release.
 
-Bump rules:
-
-| Change | Bump |
-|---|---|
-| New optional reference / new template / `SKILL.md` micro-edit | **patch** |
-| Workflow changes in `SKILL.md`, restructured `references/`, new required step | **minor** |
-| Renamed skill, removed files, breaking frontmatter changes | **major** |
-
-### Cutting a release
-
-Just run the helper — it's the entire release flow in one command:
+Quick orientation:
 
 ```bash
-node scripts/release/cut-release.mjs
-```
-
-It will:
-
-1. Sanity-check (on `main`, clean tree, in sync with `origin`).
-2. Scan every skill, find its last release tag, list commits since.
-3. For each skill with new commits, prompt **patch / minor / major / skip**
-   (or auto-pick "initial" for first release).
-4. Show a final plan + ask one confirmation.
-5. Bump manifests, sync the README download links, commit, tag, and push the
-   commit + all tags **atomically** with one `git push`.
-
-Useful variants:
-
-```bash
-node scripts/release/cut-release.mjs --dry-run     # preview only
-node scripts/release/cut-release.mjs --yes         # skip confirm prompt
-node scripts/release/cut-release.mjs --skill web-design-engineer --bump minor
-```
-
-After the push, [`.github/workflows/release-skill.yml`](./.github/workflows/release-skill.yml)
-takes over — for every tag, it:
-
-1. Re-validates the tag matches `manifest.json#version` (no drift).
-2. Packs `skills/<name>/` into `<name>-<version>.zip` + `.sha256`.
-3. Generates release notes from `git log` since the previous tag of that skill.
-4. Creates a [GitHub Release](https://github.com/ConardLi/garden-skills/releases)
-   with the zip + sha256 attached.
-5. Re-renders the inline `Download v<version> .zip` link in this README and
-   commits the change back to `main`.
-
-Every PR is also gated by [`.github/workflows/validate-skills.yml`](./.github/workflows/validate-skills.yml),
-which re-validates manifests, smoke-packs every skill, and checks that the
-README download links are in sync.
-
-If you'd rather do it by hand, the equivalent is just:
-
-```bash
-# bump skills/<name>/manifest.json#version, then:
-node scripts/release/update-readme.mjs
-git commit -am "release(<name>): <X.Y.Z>"
-git tag <name>-v<X.Y.Z>
-git push origin main <name>-v<X.Y.Z>
-```
-
-Maintainer cheat sheet:
-
-```bash
-node scripts/release/list-skills.mjs           # list skills + manifest status
-node scripts/release/pack-skill.mjs --all      # smoke-pack everything → dist/release/
-node scripts/release/update-readme.mjs --check # CI-style README sync check
+git clone https://github.com/ConardLi/garden-skills.git
+cd garden-skills
+npm run list      # show all skills + manifest status
+npm run validate  # the same check CI runs on every PR
 ```
 
 ---
-
-## Repository layout
-
-```text
-.
-├── skills/                              ← all skills live here, one folder each
-│   ├── web-video-presentation/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json                ← name / version / category / compat
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (principles, outline, themes, audio, recording)
-│   │   ├── scripts/scaffold.sh
-│   │   ├── templates/
-│   │   └── themes/
-│   │
-│   ├── web-design-engineer/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   └── references/advanced-patterns.md
-│   │
-│   ├── gpt-image-2/
-│   │   ├── SKILL.md
-│   │   ├── manifest.json
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (18 categories, 70+ prompt templates)
-│   │   └── scripts/     (check-mode.js, generate.js, edit.js, shared.js)
-│   │
-│   └── kb-retriever/
-│       ├── SKILL.md
-│       ├── manifest.json
-│       ├── README.md  /  README.zh-CN.md
-│       ├── references/  (pdf_reading.md, excel_reading.md, excel_analysis.md)
-│       └── scripts/convert_pdf_to_images.py
-│
-├── scripts/release/                     ← release tooling (zero-dep Node ESM)
-│   ├── pack-skill.mjs                   ← skill → versioned .zip + .sha256
-│   ├── update-readme.mjs                ← rewrite <!-- DOWNLOAD:*:* --> blocks
-│   ├── list-skills.mjs                  ← inspect manifests + structure
-│   └── lib/skills.mjs                   ← shared helpers
-│
-├── .github/workflows/
-│   ├── release-skill.yml                ← tag-driven per-skill release
-│   └── validate-skills.yml              ← PR guard rails
-│
-├── .claude-plugin/
-│   └── marketplace.json                 ← Claude Code plugin marketplace manifest
-│
-├── demo/                                ← live, openable demos
-│   └── web-design-demo/
-│       └── demo2/                       ← side-by-side viewer for web-design-engineer
-│           ├── index.html
-│           ├── demo1.html  /  demo1-with-skill.html
-│           └── demo2-with-skill.html
-│
-├── dist/                                ← shared reference assets
-│   ├── imgs/                            ← README skill posters
-│   ├── prompt/
-│   │   └── claude-design-system-prompt.md   (original Claude Design system prompt)
-│
-├── website/                             ← standalone showcase websites
-│   ├── gpt-image2-website/              ← GPT Image 2 skill website
-│   └── web-design-website/              ← web-design-engineer skill website
-│
-├── README.md  /  README.zh-CN.md        ← collection index (this file)
-├── LICENSE
-└── .gitignore
-```
-
----
-
 
 ## Acknowledgments
 

@@ -7,13 +7,17 @@ name: Release Skill
 #
 # This workflow:
 #   1. Parses the tag to extract <skill> and <version>.
-#   2. Validates the manifest version matches the tag (no drift).
-#   3. Packs skills/<skill>/ into <skill>-<version>.zip + .sha256.
-#   4. Generates release notes from `git log` since the previous tag of this
+#   2. Validates the manifest version matches the tag (no drift) and packs
+#      skills/<skill>/ into <skill>-<version>.zip + .sha256 via `npm run pack`.
+#   3. Generates release notes from `git log` since the previous tag of this
 #      same skill (falls back to all-history on the first release).
-#   5. Creates a GitHub Release with the zip + sha256 attached.
-#   6. Re-renders the <!-- DOWNLOAD:*:* --> blocks in README.md / README.zh-CN.md
-#      and pushes the change back to the default branch.
+#   4. Creates a GitHub Release with the zip + sha256 attached.
+#   5. Re-renders the inline `Download v<version> .zip` link in README.md /
+#      README.zh-CN.md via `npm run readme:sync` and pushes the change back
+#      to the default branch.
+#
+# See CONTRIBUTING.md for the full release flow (and `cut-release.mjs` which
+# automates the maintainer-side bump + tag + push).
 
 on:
   push:
@@ -66,7 +70,7 @@ jobs:
 
       - name: Pack skill
         run: |
-          node scripts/release/pack-skill.mjs \
+          npm run pack -- \
             --skill "${{ steps.parse.outputs.skill }}" \
             --version "${{ steps.parse.outputs.version }}" \
             --out dist/release
@@ -128,30 +132,28 @@ jobs:
             "dist/release/${SKILL}-${VERSION}.zip" \
             "dist/release/${SKILL}-${VERSION}.zip.sha256"
 
-      - name: Sync README download blocks
-        run: node scripts/release/update-readme.mjs
-
-      - name: Commit README changes (if any)
+      - name: Sync README download links and push back to main
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKILL: ${{ steps.parse.outputs.skill }}
           VERSION: ${{ steps.parse.outputs.version }}
         run: |
-          if [ -n "$(git status --porcelain README.md README.zh-CN.md)" ]; then
-            git config user.name  "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git checkout -B sync-readme-${SKILL}-${VERSION} || true
+          # Always switch to the default branch first — when the workflow was
+          # triggered by a tag push, HEAD is detached at the tag, not on main.
+          DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout "$DEFAULT_BRANCH"
+          git pull --ff-only origin "$DEFAULT_BRANCH"
 
-            # Push to the default branch directly.
-            DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
-            git fetch origin "$DEFAULT_BRANCH"
-            git checkout "$DEFAULT_BRANCH"
-            git pull --ff-only origin "$DEFAULT_BRANCH"
-            node scripts/release/update-readme.mjs
-            git add README.md README.zh-CN.md
-            git commit -m "docs(readme): sync download links for ${SKILL} v${VERSION}"
-            git push origin "$DEFAULT_BRANCH"
-          else
+          npm run readme:sync
+
+          if [ -z "$(git status --porcelain README.md README.zh-CN.md)" ]; then
             echo "README already in sync — nothing to commit."
+            exit 0
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md README.zh-CN.md
+          git commit -m "docs(readme): sync download links for ${SKILL} v${VERSION}"
+          git push origin "$DEFAULT_BRANCH"
