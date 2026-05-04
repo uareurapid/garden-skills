@@ -1,0 +1,42 @@
+name: Validate Skills
+
+# PR-time guard rails. Runs on every push / PR that touches a skill, the
+# release scripts, or either README. Cheap, fast, no side effects.
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "scripts/release/**"
+      - "README.md"
+      - "README.zh-CN.md"
+      - ".github/workflows/validate-skills.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "skills/**"
+      - "scripts/release/**"
+      - "README.md"
+      - "README.zh-CN.md"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Lint manifests + skill structure
+        run: node scripts/release/list-skills.mjs
+
+      - name: Smoke-pack every skill (no upload)
+        run: node scripts/release/pack-skill.mjs --all --out dist/release
+
+      - name: Verify README download blocks are in sync with manifests
+        run: node scripts/release/update-readme.mjs --check

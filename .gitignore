@@ -21,6 +21,9 @@ dist/web/dist/
 dist/web/dist-ssr/
 *.local
 
+# Release artifacts (built by scripts/release/pack-skill.mjs in CI)
+dist/release/
+
 # Skill runtime artifacts
 garden-gpt-image-2/
 
