@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 // Rewrites the <!-- DOWNLOAD:<skill>:start --> ... <!-- DOWNLOAD:<skill>:end -->
-// blocks in README.md and README.zh-CN.md so they always reflect the current
-// version declared in skills/<name>/manifest.json.
+// blocks in README.md and README.zh-CN.md so they always advertise the
+// most recently published version of each skill.
+//
+// IMPORTANT: the version source is the latest *git tag* for that skill
+// (`<skill>-v<semver>`), NOT skills/<name>/manifest.json. The manifest is
+// the "version under development"; the README must point at what users
+// can actually download right now. Otherwise bumping a manifest before
+// cutting a release would produce a 404 download link in the README.
 //
 // Idempotent: running it twice in a row produces no diff.
 //
@@ -13,7 +19,14 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { REPO_ROOT, loadAllManifests, buildTag, zipName } from "./lib/skills.mjs";
+import {
+  REPO_ROOT,
+  loadAllManifests,
+  buildTag,
+  zipName,
+  lastTagFor,
+  parseTag,
+} from "./lib/skills.mjs";
 
 const DEFAULT_REPO = "ConardLi/garden-skills";
 
@@ -23,8 +36,8 @@ const FILES = [
 ];
 
 const COPY = {
-  en: { label: "Download v%V .zip" },
-  zh: { label: "下载 v%V .zip" },
+  en: { label: "Download v%V .zip", unreleased: "_(no release yet — coming soon)_" },
+  zh: { label: "下载 v%V .zip", unreleased: "_（暂未发布）_" },
 };
 
 // Per-skill block is intentionally a single inline link — appended to the
@@ -32,15 +45,26 @@ const COPY = {
 // flavours (npx, marketplace, manual copy, submodule) live in the unified
 // Install section below.
 //
-// The URL points at the pinned zip for the current manifest version. It's
-// auto-rewritten on every release, so the README always advertises the most
-// recent immutable artifact for that skill — no rolling-tag plumbing needed.
+// The URL points at the pinned zip for the latest published version (read
+// from the latest git tag for this skill). Skills that have never been
+// released get a placeholder so the marker still round-trips cleanly.
 function buildBlock(skill, version, repo, lang) {
+  if (!version) return COPY[lang].unreleased;
   const tag = buildTag(skill, version);
   const zip = zipName(skill, version);
   const url = `https://github.com/${repo}/releases/download/${tag}/${zip}`;
   const label = COPY[lang].label.replace("%V", version);
   return `[${label}](${url})`;
+}
+
+// Resolves the version a README should advertise for a given skill.
+// Returns the semver string from the latest `<skill>-v<semver>` tag, or
+// null if the skill has never been tagged.
+function publishedVersionFor(skillName) {
+  const tag = lastTagFor(skillName);
+  if (!tag) return null;
+  const parsed = parseTag(tag);
+  return parsed?.version ?? null;
 }
 
 function rewrite(content, blocks) {
@@ -89,15 +113,31 @@ async function main() {
   }
 
   const manifests = await loadAllManifests();
+  // Resolve the published version for each skill ONCE here, so we don't
+  // shell out to git per-file.
+  const published = manifests.map((m) => ({
+    name: m.name,
+    manifestVersion: m.manifest.version,
+    publishedVersion: publishedVersionFor(m.name),
+  }));
   console.log(`[readme] repo=${args.repo}  skills=${manifests.length}`);
+  for (const p of published) {
+    const note =
+      p.publishedVersion === null
+        ? "no tag yet"
+        : p.publishedVersion === p.manifestVersion
+          ? `v${p.publishedVersion}`
+          : `v${p.publishedVersion} (manifest=${p.manifestVersion}, awaiting release)`;
+    console.log(`[readme]   ${p.name}: ${note}`);
+  }
 
   let drift = false;
   for (const file of FILES) {
     const original = await readFile(file.path, "utf8");
     const blocks = Object.fromEntries(
-      manifests.map((m) => [
-        m.name,
-        buildBlock(m.name, m.manifest.version, args.repo, file.lang),
+      published.map((p) => [
+        p.name,
+        buildBlock(p.name, p.publishedVersion, args.repo, file.lang),
       ]),
     );
     const updated = rewrite(original, blocks);
