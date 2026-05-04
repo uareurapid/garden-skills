@@ -8,12 +8,13 @@ interface Options {
   /** `manual` = no playback. `audio` = play but don't auto-advance.
    *  `auto` = play and auto-advance when finished. */
   mode: PlaybackMode;
-  /** Optional minimum hold (ms) for the current step in `auto` mode.
-   *  Effective hold = max(audio duration, minHoldMs). */
-  minHoldMs?: number;
-  /** Extra ms to wait after audio (or minHold) finishes, in `auto` mode.
-   *  Gives chapter close-out animations a small breathing room. */
+  /** Small breathing pad (ms) after audio finishes before advancing,
+   *  in `auto` mode. Default 200ms. Set to 0 if mp3 already has trailing
+   *  silence. */
   trailMs?: number;
+  /** Fallback duration (ms) for `auto` mode when the audio file is missing
+   *  or fails to play. Typically computed from text length. */
+  estimateFallbackMs?: number;
   /** Called when `auto` mode determines the step is finished. */
   onAutoAdvance: () => void;
   /** Has the user started auto playback? (Browsers block autoplay until
@@ -25,22 +26,23 @@ interface Options {
  * Per-step audio playback for the presentation.
  *
  * Manages a single hidden `<audio>` element. Switches `src` whenever the
- * current step changes. In `auto` mode, advances to the next step when
- * audio finishes (or after `minHoldMs`, whichever is later) plus a small
- * trailing pad.
+ * current step changes.
  *
- * If the audio file 404s (synthesis hasn't run yet), `auto` mode falls
- * back to a duration estimate of (text length × ~250ms / char) so the
- * presentation can still be previewed end-to-end without TTS output.
+ * In `auto` mode:
+ *   • Audio file present → advance `trailMs` after the audio's `ended` event.
+ *   • Audio file missing / blocked / src = null → advance after
+ *     `estimateFallbackMs` (so previews and silent steps still work).
  *
- * The fallback duration is provided externally via `minHoldMs` — pass
- * `Math.max(estimateMs, narrationMinHold)` from the App.
+ * Audio playback is the sole driver of step duration — there is intentionally
+ * no "minimum hold" knob. If a chapter's visual animation needs more time,
+ * the chapter should write longer narration, split the step, or speed the
+ * animation up. This keeps Auto-mode behavior trivially predictable.
  */
 export function useAudioPlayer({
   src,
   mode,
-  minHoldMs = 0,
-  trailMs = 600,
+  trailMs = 200,
+  estimateFallbackMs = 1500,
   onAutoAdvance,
   autoStarted,
 }: Options) {
@@ -50,7 +52,6 @@ export function useAudioPlayer({
   onAdvanceRef.current = onAutoAdvance;
 
   useEffect(() => {
-    // Tear down any previous audio instance.
     const prev = audioRef.current;
     if (prev) {
       prev.pause();
@@ -62,21 +63,16 @@ export function useAudioPlayer({
     if (mode === "manual") return;
     if (mode === "auto" && !autoStarted) return;
 
-    const startedAt = Date.now();
     let advanced = false;
-    let trailTimer: number | null = null;
-    let estimateTimer: number | null = null;
+    let timer: number | null = null;
 
-    const scheduleAdvance = (audioEndedAt: number) => {
+    const advanceAfter = (ms: number) => {
       if (mode !== "auto" || advanced) return;
-      const minHoldDoneAt = startedAt + minHoldMs;
-      const advanceAt = Math.max(audioEndedAt, minHoldDoneAt) + trailMs;
-      const wait = Math.max(0, advanceAt - Date.now());
-      trailTimer = window.setTimeout(() => {
+      timer = window.setTimeout(() => {
         if (advanced) return;
         advanced = true;
         onAdvanceRef.current();
-      }, wait);
+      }, Math.max(0, ms));
     };
 
     if (src) {
@@ -84,38 +80,26 @@ export function useAudioPlayer({
       audioRef.current = audio;
       audio.preload = "auto";
 
-      audio.addEventListener("ended", () => scheduleAdvance(Date.now()));
+      audio.addEventListener("ended", () => advanceAfter(trailMs));
       audio.addEventListener("error", () => {
         // Audio file missing or undecodable — fall back to estimate.
-        if (mode === "auto") scheduleEstimateOnly();
+        if (mode === "auto") advanceAfter(estimateFallbackMs);
       });
 
       audio.play().catch((err) => {
         // Autoplay blocked (rare, AutoStartGate should prevent this) or
         // file missing — fall back to estimate in auto mode.
         console.warn("audio play failed:", err);
-        if (mode === "auto") scheduleEstimateOnly();
+        if (mode === "auto") advanceAfter(estimateFallbackMs);
       });
     } else if (mode === "auto") {
-      // No audio src at all — use minHoldMs only.
-      scheduleEstimateOnly();
-    }
-
-    function scheduleEstimateOnly() {
-      if (advanced) return;
-      const advanceAt = startedAt + Math.max(minHoldMs, 1500);
-      const wait = Math.max(0, advanceAt - Date.now()) + trailMs;
-      estimateTimer = window.setTimeout(() => {
-        if (advanced) return;
-        advanced = true;
-        onAdvanceRef.current();
-      }, wait);
+      // No audio for this step (silent / empty narration) — use estimate.
+      advanceAfter(estimateFallbackMs);
     }
 
     return () => {
       advanced = true;
-      if (trailTimer != null) clearTimeout(trailTimer);
-      if (estimateTimer != null) clearTimeout(estimateTimer);
+      if (timer != null) clearTimeout(timer);
       const a = audioRef.current;
       if (a) {
         a.pause();
@@ -124,5 +108,5 @@ export function useAudioPlayer({
         audioRef.current = null;
       }
     };
-  }, [src, mode, minHoldMs, trailMs, autoStarted]);
+  }, [src, mode, trailMs, estimateFallbackMs, autoStarted]);
 }

@@ -48,12 +48,15 @@ npm run extract-narrations
 ```json
 [
   { "chapter": "coldopen", "step": 1, "text": "...", "audio": "coldopen/1.mp3" },
-  { "chapter": "coldopen", "step": 2, "text": "...", "audio": "coldopen/2.mp3", "minHoldMs": 8000 },
+  { "chapter": "coldopen", "step": 2, "text": "...", "audio": "coldopen/2.mp3" },
   ...
 ]
 ```
 
 让用户**先扫一眼这个 json**，确认文本和切分都对，再开始烧 token 合成。
+
+> 空字符串的 narration 会被自动跳过（不烧 TTS token）——运行时 Auto 模式
+> 按字数估时撑过这种"无声过场"step。
 
 ### 2. 合成
 
@@ -168,9 +171,13 @@ node script 把响应写到目标路径。
 Auto 模式首次需要按一次 `Space` 启动（绕过浏览器自动播放限制），之后
 全自动跑。**录屏时打开屏幕录制 → 按 Space → 整片自动跑完 → stop**。
 
-如果某个 step 的视觉动画比口播长（比如 8s 数据可视化 vs 3s 口播），
-在 narrations.ts 里写 `{ text: "...", minHoldMs: 8000 }`，运行时会等
-`max(audio_ended, minHoldMs)` 才推进。
+> **Auto 模式的推进规则就一句话**：每段音频播完 + 200ms 缓冲 → 自动 next。
+> **没有"等动画跑完"的兜底**——如果你写的视觉动画比口播长，会被当场切。
+> 解决办法：写更长口播 / 拆 step / 调动画速度（详见
+> [`CHAPTER-CRAFT.md`](CHAPTER-CRAFT.md) 「代码层最小约束」）。
+>
+> 音频文件缺失（还没合成 / 404）或 narration 是空串 → 退化到字数估时
+> （`max(1500ms, 字数 × 250ms)`），保证预览也能整片跑通。
 
 ---
 

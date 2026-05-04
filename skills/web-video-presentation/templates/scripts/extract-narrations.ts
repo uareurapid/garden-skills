@@ -12,12 +12,14 @@
  * and flattens to:
  *
  *   [
- *     { chapter, step, text, minHoldMs?, audio: "<chapter>/<step>.mp3" },
+ *     { chapter, step, text, audio: "<chapter>/<step>.mp3" },
  *     ...
  *   ]
  *
  * Step indices in the JSON are 1-indexed, matching the audio file naming
  * convention (`public/audio/<chapter>/<N>.mp3`).
+ *
+ * Empty narration strings are skipped (silent steps don't need a TTS file).
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -35,7 +37,6 @@ interface Segment {
   chapter: string;
   step: number;
   text: string;
-  minHoldMs?: number;
   audio: string;
 }
 
@@ -93,23 +94,28 @@ async function main() {
   const order = await readChapterOrder();
 
   const segments: Segment[] = [];
+  let silentSteps = 0;
   for (const { id, folder } of order) {
     const arr = await loadNarrations(folder);
     arr.forEach((entry, i) => {
       const step = i + 1;
-      const text = typeof entry === "string" ? entry : (entry as any).text;
-      const minHoldMs =
-        typeof entry === "string" ? undefined : (entry as any).minHoldMs;
-      if (typeof text !== "string" || text.trim() === "") {
+      if (typeof entry !== "string") {
         throw new Error(
-          `chapter "${id}" step ${step}: narration text is empty or not a string`,
+          `chapter "${id}" step ${step}: narration must be a string ` +
+            `(got ${typeof entry}). The {text, minHoldMs} form was removed; ` +
+            `if your animation is longer than the narration, write longer ` +
+            `narration, split the step, or speed the animation up.`,
         );
+      }
+      if (entry.trim() === "") {
+        // Silent step — no TTS needed; runtime falls back to estimate.
+        silentSteps++;
+        return;
       }
       segments.push({
         chapter: id,
         step,
-        text,
-        ...(minHoldMs != null ? { minHoldMs } : {}),
+        text: entry,
         audio: `${id}/${step}.mp3`,
       });
     });
@@ -118,7 +124,8 @@ async function main() {
   await writeFile(OUT_PATH, JSON.stringify(segments, null, 2) + "\n", "utf8");
 
   console.error(
-    `✓ extracted ${segments.length} segments from ${order.length} chapters`,
+    `✓ extracted ${segments.length} segments from ${order.length} chapters` +
+      (silentSteps > 0 ? ` (skipped ${silentSteps} silent steps)` : ""),
   );
   console.error(`  → ${OUT_PATH}`);
   if (print) console.log(JSON.stringify(segments, null, 2));

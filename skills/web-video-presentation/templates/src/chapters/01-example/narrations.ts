@@ -8,13 +8,15 @@ import type { Narration } from "../../registry/types";
  *
  * Audio synthesis uses this file directly (see scripts/extract-narrations.ts).
  * Auto-play mode plays `public/audio/<chapter-id>/<i+1>.mp3` at each step
- * and advances when the audio ends (or after `minHoldMs`, whichever is
- * later).
+ * and advances when the audio ends (+ a tiny trail pad).
  *
- * Plain string  → step duration is bounded by the audio length only.
- * `{ text, minHoldMs }` → also wait at least `minHoldMs` before advancing
- *    (use this when the visual animation in this step is longer than the
- *    audio narration).
+ * Empty string ("") = no audio for this step (silent transition);
+ * Auto mode falls back to a short estimate so the presentation still
+ * progresses.
+ *
+ * Rule of thumb: visual animation duration MUST be ≤ narration duration.
+ * If your animation needs more time, write longer narration, split the
+ * step, or speed the animation up — there is no "minimum hold" knob.
  */
 export const narrations: Narration[] = [
   // step 0 — magazine cover

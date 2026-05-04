@@ -12,14 +12,15 @@ import { useAudioPlayer } from "./hooks/useAudioPlayer";
 import { useAutoMode } from "./hooks/useAutoMode";
 import { useStepper } from "./hooks/useStepper";
 import { CHAPTERS } from "./registry/chapters";
-import { narrationMinHold, narrationText } from "./registry/types";
 
 /**
- * Estimate spoken duration of a Chinese narration string.
- * Native pace ≈ 4 char/s → 250ms per char. Used as Auto-mode fallback
- * when the audio file is missing.
+ * Estimate spoken duration of a Chinese narration string. Native pace
+ * ≈ 4 char/s → 250ms per char. Used as Auto-mode fallback ONLY when the
+ * audio file is missing / fails / the narration is empty. When audio plays
+ * normally, this value is unused — auto-advance fires on `audio.ended`.
  */
 function estimateMs(text: string): number {
+  if (!text) return 1500;
   return Math.max(1500, text.length * 250);
 }
 
@@ -27,17 +28,15 @@ export default function App() {
   const stepper = useStepper(CHAPTERS);
   const ch = CHAPTERS[stepper.cursor.chapter]!;
   const Cmp = ch.Component;
-  const narration = ch.narrations[stepper.cursor.step]!;
-  const stepText = narrationText(narration);
-  const narrationMin = narrationMinHold(narration) ?? 0;
-  const fallbackMin = Math.max(narrationMin, estimateMs(stepText));
+  const stepText = ch.narrations[stepper.cursor.step] ?? "";
 
   const { mode, cycleMode, autoStarted, setAutoStarted } = useAutoMode();
 
   // Audio path follows the convention: /audio/<chapter-id>/<step+1>.mp3
   // (1-indexed file names match what `extract-narrations.ts` outputs.)
+  // Empty narration → no audio src, Auto mode falls back to estimate.
   const audioSrc =
-    mode === "manual"
+    mode === "manual" || stepText === ""
       ? null
       : `${import.meta.env.BASE_URL}audio/${ch.id}/${stepper.cursor.step + 1}.mp3`;
 
@@ -46,8 +45,8 @@ export default function App() {
   useAudioPlayer({
     src: audioSrc,
     mode,
-    minHoldMs: mode === "auto" ? fallbackMin : 0,
-    trailMs: 600,
+    trailMs: 200,
+    estimateFallbackMs: estimateMs(stepText),
     onAutoAdvance,
     autoStarted,
   });

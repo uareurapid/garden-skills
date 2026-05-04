@@ -5,14 +5,13 @@ export interface ChapterStepProps {
 }
 
 /**
- * One narration entry. Either a plain string (the spoken text), or an
- * object with a minimum hold time in milliseconds.
+ * One narration entry — the spoken text for that step.
  *
- * Use `{ text, minHoldMs }` when the visual animation in this step takes
- * longer than the audio narration — Auto mode will wait for whichever
- * finishes last before advancing.
+ * Empty string ("") means "no audio for this step" (e.g. silent transition
+ * shot). Auto mode falls back to a short estimate when audio is missing or
+ * the text is empty.
  */
-export type Narration = string | { text: string; minHoldMs?: number };
+export type Narration = string;
 
 export interface ChapterDef {
   id: string;
@@ -23,14 +22,4 @@ export interface ChapterDef {
    */
   narrations: Narration[];
   Component: ComponentType<ChapterStepProps>;
-}
-
-/** Helper: extract the spoken text from a Narration entry. */
-export function narrationText(n: Narration): string {
-  return typeof n === "string" ? n : n.text;
-}
-
-/** Helper: extract the optional minimum hold (ms) from a Narration entry. */
-export function narrationMinHold(n: Narration): number | undefined {
-  return typeof n === "string" ? undefined : n.minHoldMs;
 }
