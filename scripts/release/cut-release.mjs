@@ -31,7 +31,9 @@ import {
   validateManifest,
   validateSkillStructure,
   buildTag,
+  parseTag,
   bumpVersion,
+  compareSemver,
   lastTagFor,
   commitsSince,
   git,
@@ -181,11 +183,27 @@ async function buildPlan(args) {
     }
     const lastTag = lastTagFor(s.name);
     const commits = commitsSince(lastTag, s.name);
+    const publishedVersion = lastTag ? parseTag(lastTag)?.version ?? null : null;
+    const manifestVersion = s.manifest.version;
+
+    // The manifest can legitimately sit ahead of the last published tag:
+    // a contributor may have bumped manifest.version by hand and committed
+    // it before running release. In that case we must NOT bump again — we
+    // ship exactly the version they wrote into the manifest.
+    let manifestState = "synced";
+    if (publishedVersion) {
+      const cmp = compareSemver(manifestVersion, publishedVersion);
+      if (cmp > 0) manifestState = "ahead";
+      else if (cmp < 0) manifestState = "behind";
+    }
+
     candidates.push({
       name: s.name,
       manifestPath: s.manifestPath,
       manifest: s.manifest,
-      currentVersion: s.manifest.version,
+      currentVersion: manifestVersion,
+      publishedVersion,
+      manifestState, // "synced" | "ahead" | "behind"
       lastTag,
       commits,
       isInitial: lastTag === null,
@@ -207,7 +225,15 @@ async function decideBumps(candidates, args) {
     const v = cand.currentVersion;
     const presetKind = args.perSkill[cand.name];
     const hasNew = cand.commits.length > 0;
-    const eligible = cand.isInitial || hasNew || presetKind;
+    const isAhead = cand.manifestState === "ahead";
+    const eligible = cand.isInitial || hasNew || presetKind || isAhead;
+
+    if (cand.manifestState === "behind") {
+      fail(
+        `${cand.name}: manifest.version (v${v}) is BEHIND the latest tag (${cand.lastTag}). ` +
+          `Refusing to release a downgrade. Bump manifest to >= v${cand.publishedVersion}.`,
+      );
+    }
 
     if (!eligible) {
       console.log(
@@ -216,7 +242,11 @@ async function decideBumps(candidates, args) {
       continue;
     }
     printedAny = true;
-    const tag = cand.isInitial ? c("yellow", "INITIAL") : `since ${cand.lastTag}`;
+    const tag = cand.isInitial
+      ? c("yellow", "INITIAL")
+      : isAhead
+        ? c("cyan", `MANIFEST AHEAD: v${cand.publishedVersion} → v${v}`)
+        : `since ${cand.lastTag}`;
     console.log(
       `  ${c("green", "●")} ${c("bold", cand.name.padEnd(24))} ${c("dim", `v${v}`)}  ${c("dim", `(${tag}${hasNew ? `, ${cand.commits.length} commit${cand.commits.length === 1 ? "" : "s"}` : ""})`)}`,
     );
@@ -237,6 +267,14 @@ async function decideBumps(candidates, args) {
         ? `initial release at v${v} (--bump ${presetKind} ignored — edit manifest.json to change)`
         : `initial release at v${v}`;
       console.log(`      → ${c("cyan", note)}`);
+    } else if (isAhead) {
+      // Manifest was hand-bumped past the last tag. Honour exactly what the
+      // contributor wrote — bumping again would skip over their version.
+      kind = "keep";
+      const note = presetKind
+        ? `using manifest v${v} as-is (--bump ${presetKind} ignored — manifest already ahead of ${cand.lastTag})`
+        : `using manifest v${v} as-is (already bumped past ${cand.lastTag})`;
+      console.log(`      → ${c("cyan", note)}`);
     } else if (presetKind) {
       kind = presetKind;
       console.log(`      → ${c("cyan", `bump preset: ${kind} (v${bumpVersion(v, kind)})`)}`);
@@ -248,7 +286,8 @@ async function decideBumps(candidates, args) {
       console.log(c("dim", `      skipped`));
       continue;
     }
-    const nextVersion = kind === "initial" ? v : bumpVersion(v, kind);
+    const nextVersion =
+      kind === "initial" || kind === "keep" ? v : bumpVersion(v, kind);
     decisions.push({ ...cand, kind, nextVersion });
     console.log("");
   }
@@ -337,7 +376,11 @@ async function main() {
   // ---- summary ----------------------------------------------------------
   console.log(c("bold", "\nRelease plan:"));
   for (const d of decisions) {
-    const hop = d.kind === "initial" ? `v${d.nextVersion} (initial)` : `v${d.currentVersion} → v${d.nextVersion} (${d.kind})`;
+    let hop;
+    if (d.kind === "initial") hop = `v${d.nextVersion} (initial)`;
+    else if (d.kind === "keep")
+      hop = `v${d.publishedVersion} → v${d.nextVersion} (manifest already bumped)`;
+    else hop = `v${d.currentVersion} → v${d.nextVersion} (${d.kind})`;
     const tag = buildTag(d.name, d.nextVersion);
     console.log(`  • ${c("bold", d.name.padEnd(24))} ${hop}    ${c("dim", `→ tag ${tag}`)}`);
   }
@@ -369,6 +412,8 @@ async function main() {
   for (const d of decisions) {
     if (d.kind === "initial") {
       console.log(`      ${d.name}: keeping v${d.nextVersion} (initial)`);
+    } else if (d.kind === "keep") {
+      console.log(`      ${d.name}: keeping v${d.nextVersion} (manifest already at target)`);
     } else {
       console.log(`      ${d.name}: ${d.currentVersion} → ${d.nextVersion}`);
       await bumpManifest(d);

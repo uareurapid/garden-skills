@@ -223,6 +223,21 @@ export function commitsSince(tag, skill, limit = 50) {
     });
 }
 
+// Compare two SemVer-ish strings (pre-release suffix is ignored). Returns
+// -1 if a<b, 0 if equal core, 1 if a>b.
+const SEMVER_CORE_RE = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/;
+export function compareSemver(a, b) {
+  const ma = SEMVER_CORE_RE.exec(a);
+  const mb = SEMVER_CORE_RE.exec(b);
+  if (!ma || !mb) throw new Error(`compareSemver: invalid input ${a} / ${b}`);
+  for (let i = 1; i <= 3; i++) {
+    const da = Number(ma[i]);
+    const db = Number(mb[i]);
+    if (da !== db) return da > db ? 1 : -1;
+  }
+  return 0;
+}
+
 // Bump a SemVer string. Pre-release suffix is dropped on patch/minor/major.
 const SEMVER_BUMP_RE = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/;
 export function bumpVersion(version, kind) {
