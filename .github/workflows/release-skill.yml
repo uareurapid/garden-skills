@@ -22,8 +22,11 @@ name: Release Skill
 on:
   push:
     tags:
-      - "*-v[0-9]+.[0-9]+.[0-9]+"
-      - "*-v[0-9]+.[0-9]+.[0-9]+-*"
+      # GitHub Actions matches tags via minimatch + extglob. A bare `+`
+      # after a char class is a literal `+`, NOT "one or more". So we use
+      # a permissive `*-v*` here and let the parse step below validate the
+      # exact `<skill>-v<MAJOR>.<MINOR>.<PATCH>[-prerelease]` shape.
+      - "*-v*"
 
 permissions:
   contents: write

@@ -105,6 +105,17 @@ const c = (color, s) => (stdout.isTTY ? `${C[color]}${s}${C.reset}` : s);
 
 // ----- sanity checks ------------------------------------------------------
 
+// Files that MUST exist at HEAD for the tag-triggered Release workflow to
+// succeed. GitHub uses the workflow file from the *tag's commit*, not from
+// main HEAD. So if HEAD is missing any of these, the tag we're about to
+// create will point at a commit that "can't release itself".
+const REQUIRED_AT_HEAD = [
+  ".github/workflows/release-skill.yml",
+  "package.json",
+  "scripts/release/pack-skill.mjs",
+  "scripts/release/update-readme.mjs",
+];
+
 function preflight(branch, { strict }) {
   const issue = (msg) => (strict ? fail(msg) : console.warn(c("yellow", `warn: ${msg}`)));
 
@@ -136,6 +147,17 @@ function preflight(branch, { strict }) {
     : 0;
   if (behind > 0) {
     issue(`Local "${branch}" is ${behind} commit(s) behind origin/${branch}. Run \`git pull\` first.`);
+  }
+
+  // Verify HEAD carries the full release toolchain. Without these, any tag
+  // we create here would trigger a workflow run that fails immediately.
+  const missing = REQUIRED_AT_HEAD.filter((p) => !gitOk(["cat-file", "-e", `HEAD:${p}`]));
+  if (missing.length) {
+    issue(
+      `HEAD is missing release infrastructure required for tags to build:\n  - ${missing.join(
+        "\n  - ",
+      )}\nCommit and push these (or rebase the tag onto a commit that has them) before tagging.`,
+    );
   }
 }
 
