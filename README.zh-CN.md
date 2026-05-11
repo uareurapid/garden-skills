@@ -39,7 +39,7 @@
 [![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
-[English](./README.md) · [中文文档](./README.zh-CN.md)
+[English](./README.md) · [中文文档](./README.zh-CN.md) · [日本語](./README.ja-JP.md)
 
 </div>
 
