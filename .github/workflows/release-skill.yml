@@ -12,9 +12,9 @@ name: Release Skill
 #   3. Generates release notes from `git log` since the previous tag of this
 #      same skill (falls back to all-history on the first release).
 #   4. Creates a GitHub Release with the zip + sha256 attached.
-#   5. Re-renders the inline `Download v<version> .zip` link in README.md /
-#      README.zh-CN.md via `npm run readme:sync` and pushes the change back
-#      to the default branch.
+#   5. Re-renders the inline `Download v<version> .zip` link in localized
+#      READMEs via `npm run readme:sync` and pushes the change back to the
+#      default branch.
 #
 # See CONTRIBUTING.md for the full release flow (and `cut-release.mjs` which
 # automates the maintainer-side bump + tag + push).
@@ -150,13 +150,13 @@ jobs:
 
           npm run readme:sync
 
-          if [ -z "$(git status --porcelain README.md README.zh-CN.md)" ]; then
+          if [ -z "$(git status --porcelain README.md README.zh-CN.md README.ja-JP.md)" ]; then
             echo "README already in sync — nothing to commit."
             exit 0
           fi
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md README.zh-CN.md
+          git add README.md README.zh-CN.md README.ja-JP.md
           git commit -m "docs(readme): sync download links for ${SKILL} v${VERSION}"
           git push origin "$DEFAULT_BRANCH"

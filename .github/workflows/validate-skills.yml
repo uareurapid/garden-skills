@@ -1,7 +1,7 @@
 name: Validate Skills
 
 # PR-time guard rails. Runs on every push / PR that touches a skill, the
-# release scripts, or either README. Cheap, fast, no side effects.
+# release scripts, or any localized README. Cheap, fast, no side effects.
 
 on:
   pull_request:
@@ -10,6 +10,7 @@ on:
       - "scripts/release/**"
       - "README.md"
       - "README.zh-CN.md"
+      - "README.ja-JP.md"
       - ".github/workflows/validate-skills.yml"
       - "package.json"
   push:
@@ -19,6 +20,7 @@ on:
       - "scripts/release/**"
       - "README.md"
       - "README.zh-CN.md"
+      - "README.ja-JP.md"
       - ".github/workflows/validate-skills.yml"
       - "package.json"
   workflow_dispatch: {}

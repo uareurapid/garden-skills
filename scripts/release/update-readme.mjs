@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Rewrites the <!-- DOWNLOAD:<skill>:start --> ... <!-- DOWNLOAD:<skill>:end -->
-// blocks in README.md and README.zh-CN.md so they always advertise the
+// blocks in README.md, README.zh-CN.md, and README.ja-JP.md so they always advertise the
 // most recently published version of each skill.
 //
 // IMPORTANT: the version source is the latest *git tag* for that skill
@@ -12,7 +12,7 @@
 // Idempotent: running it twice in a row produces no diff.
 //
 // Usage:
-//   node scripts/release/update-readme.mjs           # rewrite both READMEs
+//   node scripts/release/update-readme.mjs           # rewrite localized READMEs
 //   node scripts/release/update-readme.mjs --check   # exit 1 if anything would change
 //   node scripts/release/update-readme.mjs --repo ConardLi/garden-skills
 
@@ -33,11 +33,13 @@ const DEFAULT_REPO = "ConardLi/garden-skills";
 const FILES = [
   { path: path.join(REPO_ROOT, "README.md"), lang: "en" },
   { path: path.join(REPO_ROOT, "README.zh-CN.md"), lang: "zh" },
+  { path: path.join(REPO_ROOT, "README.ja-JP.md"), lang: "ja" },
 ];
 
 const COPY = {
   en: { label: "Download v%V .zip", unreleased: "_(no release yet — coming soon)_" },
   zh: { label: "下载 v%V .zip", unreleased: "_（暂未发布）_" },
+  ja: { label: "Download v%V .zip", unreleased: "_（まだリリースされていません）_" },
 };
 
 // Per-skill block is intentionally a single inline link — appended to the
