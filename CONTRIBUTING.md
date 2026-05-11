@@ -3,7 +3,7 @@
 Everything you need to add a skill, cut a release, or hack on the tooling
 behind this monorepo.
 
-[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md)
+[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md) · [日本語](./CONTRIBUTING.ja-JP.md)
 
 ---
 
